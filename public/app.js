@@ -616,15 +616,24 @@ function generateFormattedReport(data) {
 function rollForwardNextMonth() {
   const currentBalance = parseFloat(elDispBalance.textContent.replace("RM", "").trim()) || 0;
   
-  if (confirm(`Roll forward to next month?\n\n- Previous Balance will be set to RM ${currentBalance.toFixed(2)}\n- Room Previous Meters will be updated to current meter readings\n- Ready for new readings input!`)) {
-    elPrevBalance.value = currentBalance.toFixed(2);
+  if (confirm(`Roll forward to next month?\n\n- Previous Balance deduction will be set to RM ${currentBalance.toFixed(2)}\n- Room Previous Meters updated to current readings\n- Electric bill, Water bill, Total Grid Usage, and Current Meter readings cleared for new input!`)) {
+    // Carry down the balance deduction
     appState.prevBalance = currentBalance;
 
+    // Clear new month usage inputs
+    appState.electricAmount = "";
+    appState.waterAmount = "";
+    appState.totalKwh = "";
+
+    // Shift previous meter readings and clear current meter readings
     appState.rooms.forEach(r => {
-      r.prevMeter = r.currMeter;
+      if (r.currMeter !== "" && r.currMeter !== null && r.currMeter !== undefined) {
+        r.prevMeter = r.currMeter;
+      }
       r.currMeter = "";
     });
 
+    bindFormInputs();
     renderRooms();
     saveInputState();
     recalculate();
