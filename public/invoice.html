@@ -196,14 +196,15 @@
       border-collapse: collapse;
       font-size: 0.875rem;
       table-layout: fixed;
+      font-variant-numeric: tabular-nums;
     }
 
     th, td {
       padding: 10px 12px;
-      text-align: left;
       border-bottom: 1px solid var(--border);
       vertical-align: middle;
       box-sizing: border-box;
+      line-height: 1.4;
     }
 
     th {
@@ -214,6 +215,7 @@
       text-transform: uppercase;
       letter-spacing: 0.3px;
       text-align: center !important;
+      word-break: break-word;
     }
 
     td {
