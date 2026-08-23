@@ -228,6 +228,23 @@ label {
   width: 100%;
 }
 
+.date-range-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-range-wrapper .form-control {
+  flex: 1;
+}
+
+.range-sep {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
 .select-control {
   cursor: pointer;
 }

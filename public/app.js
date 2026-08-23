@@ -4,8 +4,9 @@
 
 // Initial Reference Dataset matching the provided invoice sheet
 const DEFAULT_STATE = {
-  electricPeriod: "By 12 August 2026",
-  waterPeriod: "May to July 2026",
+  electricDate: "2026-08-12",
+  waterStartDate: "2026-05-01",
+  waterEndDate: "2026-07-31",
   electricAmount: 157.15,
   prevBalance: 2.42,
   totalKwh: 477.0,
@@ -22,8 +23,9 @@ const DEFAULT_STATE = {
 let appState = loadSavedState() || JSON.parse(JSON.stringify(DEFAULT_STATE));
 
 // --- DOM Elements ---
-const elElectricPeriod = document.getElementById("electricPeriod");
-const elWaterPeriod = document.getElementById("waterPeriod");
+const elElectricDate = document.getElementById("electricDate");
+const elWaterStartDate = document.getElementById("waterStartDate");
+const elWaterEndDate = document.getElementById("waterEndDate");
 const elElectricAmount = document.getElementById("electricAmount");
 const elPrevBalance = document.getElementById("prevBalance");
 const elTotalKwh = document.getElementById("totalKwh");
@@ -73,8 +75,10 @@ function init() {
 }
 
 function bindFormInputs() {
-  elElectricPeriod.value = appState.electricPeriod || "";
-  elWaterPeriod.value = appState.waterPeriod || "";
+  if (elElectricDate) elElectricDate.value = appState.electricDate || "2026-08-12";
+  if (elWaterStartDate) elWaterStartDate.value = appState.waterStartDate || "2026-05-01";
+  if (elWaterEndDate) elWaterEndDate.value = appState.waterEndDate || "2026-07-31";
+  
   elElectricAmount.value = appState.electricAmount;
   elPrevBalance.value = appState.prevBalance;
   elTotalKwh.value = appState.totalKwh;
@@ -87,15 +91,21 @@ function bindFormInputs() {
 
 function attachEventListeners() {
   const inputs = [
-    elElectricPeriod, elWaterPeriod, elElectricAmount,
+    elElectricDate, elWaterStartDate, elWaterEndDate, elElectricAmount,
     elPrevBalance, elTotalKwh, elWaterAmount, elManualRate
   ];
 
   inputs.forEach(input => {
-    input.addEventListener("input", () => {
-      saveInputState();
-      recalculate();
-    });
+    if (input) {
+      input.addEventListener("input", () => {
+        saveInputState();
+        recalculate();
+      });
+      input.addEventListener("change", () => {
+        saveInputState();
+        recalculate();
+      });
+    }
   });
 
   elRateMode.addEventListener("change", () => {
@@ -151,8 +161,9 @@ function toggleManualRate() {
 }
 
 function saveInputState() {
-  appState.electricPeriod = elElectricPeriod.value;
-  appState.waterPeriod = elWaterPeriod.value;
+  appState.electricDate = elElectricDate ? elElectricDate.value : "2026-08-12";
+  appState.waterStartDate = elWaterStartDate ? elWaterStartDate.value : "2026-05-01";
+  appState.waterEndDate = elWaterEndDate ? elWaterEndDate.value : "2026-07-31";
   appState.electricAmount = parseFloat(elElectricAmount.value) || 0;
   appState.prevBalance = parseFloat(elPrevBalance.value) || 0;
   appState.totalKwh = parseFloat(elTotalKwh.value) || 0;
@@ -160,15 +171,14 @@ function saveInputState() {
   appState.rateMode = elRateMode.value;
   appState.manualRate = parseFloat(elManualRate.value) || 0.33;
 
-  localStorage.setItem("bill_calc_state", JSON.stringify(appState));
+  localStorage.setItem("bill_calc_state_v2", JSON.stringify(appState));
 }
 
 function loadSavedState() {
   try {
-    const saved = localStorage.getItem("bill_calc_state");
+    const saved = localStorage.getItem("bill_calc_state_v2");
     if (!saved) return null;
     const parsed = JSON.parse(saved);
-    // Normalize tenants array if legacy string
     if (parsed.rooms) {
       parsed.rooms.forEach(r => {
         if (typeof r.tenants === "string") {
@@ -179,6 +189,52 @@ function loadSavedState() {
     return parsed;
   } catch (e) {
     return null;
+  }
+}
+
+// --- Date Formatting Helpers ---
+function formatElectricDate(dateStr) {
+  if (!dateStr) return "By 12 August 2026";
+  try {
+    const parts = dateStr.split("-");
+    if (parts.length !== 3) return dateStr;
+    const [year, month, day] = parts.map(Number);
+    const date = new Date(year, month - 1, day);
+    if (isNaN(date.getTime())) return dateStr;
+    const monthName = date.toLocaleDateString("en-US", { month: "long" });
+    return `By ${day} ${monthName} ${year}`;
+  } catch (e) {
+    return dateStr;
+  }
+}
+
+function formatWaterPeriod(startStr, endStr) {
+  if (!startStr && !endStr) return "May to July 2026";
+  try {
+    if (startStr && !endStr) {
+      const [y, m, d] = startStr.split("-").map(Number);
+      const date = new Date(y, m - 1, d);
+      return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    }
+    if (startStr && endStr) {
+      const [y1, m1, d1] = startStr.split("-").map(Number);
+      const [y2, m2, d2] = endStr.split("-").map(Number);
+      const date1 = new Date(y1, m1 - 1, d1);
+      const date2 = new Date(y2, m2 - 1, d2);
+      const mName1 = date1.toLocaleDateString("en-US", { month: "long" });
+      const mName2 = date2.toLocaleDateString("en-US", { month: "long" });
+
+      if (y1 === y2) {
+        if (m1 === m2) {
+          return `${mName1} ${y1}`;
+        }
+        return `${mName1} to ${mName2} ${y1}`;
+      }
+      return `${mName1} ${y1} to ${mName2} ${y2}`;
+    }
+    return "Current Period";
+  } catch (e) {
+    return `${startStr} to ${endStr}`;
   }
 }
 
@@ -193,7 +249,6 @@ function renderRooms() {
 
     const kwhUsed = Math.max(0, (parseFloat(room.currMeter) || 0) - (parseFloat(room.prevMeter) || 0));
 
-    // Ensure tenants is an array
     if (!Array.isArray(room.tenants)) {
       room.tenants = [room.tenants || "Tenant 1"];
     }
@@ -406,9 +461,15 @@ function recalculate() {
   elDispBalance.textContent = `RM ${nextMonthBalance.toFixed(2)}`;
 
   // 5. Generate Formatted WhatsApp Text
+  const electricFormattedDate = formatElectricDate(elElectricDate ? elElectricDate.value : appState.electricDate);
+  const waterFormattedPeriod = formatWaterPeriod(
+    elWaterStartDate ? elWaterStartDate.value : appState.waterStartDate,
+    elWaterEndDate ? elWaterEndDate.value : appState.waterEndDate
+  );
+
   generateFormattedReport({
-    electricPeriod: elElectricPeriod.value,
-    waterPeriod: elWaterPeriod.value,
+    electricPeriod: electricFormattedDate,
+    waterPeriod: waterFormattedPeriod,
     electricAmount,
     prevBalance,
     totalKwh,
@@ -519,8 +580,8 @@ function renderWizardStep() {
     elWizardBody.innerHTML = `
       <div class="wizard-step-title">⚡ Step 1: Utility Invoices & Consumption</div>
       <div class="form-group" style="margin-bottom:12px;">
-        <label>Electric Bill Period / Due Date</label>
-        <input type="text" id="wizElecPeriod" class="form-control" value="${escapeHtml(wizardTempState.electricPeriod || '')}" placeholder="e.g. By 12 August 2026" />
+        <label>Electric Bill Due Date</label>
+        <input type="date" id="wizElecDate" class="form-control" value="${wizardTempState.electricDate || '2026-08-12'}" />
       </div>
       <div class="form-group" style="margin-bottom:12px;">
         <label>Total Electric Bill Amount (RM)</label>
@@ -536,8 +597,12 @@ function renderWizardStep() {
         <input type="number" step="0.1" id="wizTotalKwh" class="form-control" value="${wizardTempState.totalKwh}" />
       </div>
       <div class="form-group" style="margin-bottom:12px;">
-        <label>Water Bill Period</label>
-        <input type="text" id="wizWaterPeriod" class="form-control" value="${escapeHtml(wizardTempState.waterPeriod || '')}" placeholder="e.g. May to July 2026" />
+        <label>Water Bill Period (From - To)</label>
+        <div class="date-range-wrapper">
+          <input type="date" id="wizWaterStartDate" class="form-control" value="${wizardTempState.waterStartDate || '2026-05-01'}" />
+          <span class="range-sep">to</span>
+          <input type="date" id="wizWaterEndDate" class="form-control" value="${wizardTempState.waterEndDate || '2026-07-31'}" />
+        </div>
       </div>
       <div class="form-group" style="margin-bottom:12px;">
         <label>Total Water Bill Amount (RM)</label>
@@ -707,18 +772,20 @@ function wizardGoPrev() {
 
 function saveCurrentWizardStepData() {
   if (currentWizardStep === 1) {
-    const elP = document.getElementById("wizElecPeriod");
+    const elD = document.getElementById("wizElecDate");
     const elA = document.getElementById("wizElecAmount");
     const elB = document.getElementById("wizPrevBalance");
     const elK = document.getElementById("wizTotalKwh");
-    const elWP = document.getElementById("wizWaterPeriod");
+    const elWS = document.getElementById("wizWaterStartDate");
+    const elWE = document.getElementById("wizWaterEndDate");
     const elWA = document.getElementById("wizWaterAmount");
 
-    if (elP) wizardTempState.electricPeriod = elP.value;
+    if (elD) wizardTempState.electricDate = elD.value;
     if (elA) wizardTempState.electricAmount = parseFloat(elA.value) || 0;
     if (elB) wizardTempState.prevBalance = parseFloat(elB.value) || 0;
     if (elK) wizardTempState.totalKwh = parseFloat(elK.value) || 0;
-    if (elWP) wizardTempState.waterPeriod = elWP.value;
+    if (elWS) wizardTempState.waterStartDate = elWS.value;
+    if (elWE) wizardTempState.waterEndDate = elWE.value;
     if (elWA) wizardTempState.waterAmount = parseFloat(elWA.value) || 0;
   }
 }
