@@ -567,6 +567,8 @@ function recalculate() {
   });
 }
 
+let latestFormattedReport = "";
+
 function generateFormattedReport(data) {
   const roomKwhString = data.roomCalculations.map(r => `${r.kwh.toFixed(0)}`).join(" – ");
 
@@ -599,7 +601,10 @@ function generateFormattedReport(data) {
   lines.push(`Collected : RM ${data.totalCollected.toFixed(2)}`);
   lines.push(`\n*Balance : RM ${data.nextMonthBalance.toFixed(2)}* ➔ *use for next month bill deduction before calculation.*`);
 
-  elReportPreview.textContent = lines.join("\n");
+  latestFormattedReport = lines.join("\n");
+  if (elReportPreview) {
+    elReportPreview.textContent = latestFormattedReport;
+  }
 }
 
 function rollForwardNextMonth() {
@@ -622,7 +627,11 @@ function rollForwardNextMonth() {
 }
 
 function copyReportToClipboard() {
-  const text = elReportPreview.textContent;
+  const text = latestFormattedReport;
+  if (!text) {
+    showToast("No report data available to copy.");
+    return;
+  }
   navigator.clipboard.writeText(text).then(() => {
     showToast("Report copied to clipboard!");
   }).catch(() => {
