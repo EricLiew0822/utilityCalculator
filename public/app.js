@@ -584,20 +584,20 @@ function renderWizardStep() {
         <input type="date" id="wizElecDate" class="form-control" value="${wizardTempState.electricDate || '2026-08-12'}" />
       </div>
       <div class="form-group" style="margin-bottom:12px;">
-        <label>Total Electric Bill Amount (RM)</label>
+        <label>Total Electric Bill Amount</label>
         <input type="number" step="0.01" id="wizElecAmount" class="form-control" value="${wizardTempState.electricAmount}" />
       </div>
       <div class="form-group" style="margin-bottom:12px;">
-        <label>Previous Month Balance Carryover (RM)</label>
+        <label>Previous Month Balance Carryover</label>
         <input type="number" step="0.01" id="wizPrevBalance" class="form-control" value="${wizardTempState.prevBalance}" />
         <small class="helper-text">Deducted before calculating electricity rate</small>
       </div>
       <div class="form-group" style="margin-bottom:12px;">
-        <label>Total Grid Electricity Usage (kWh)</label>
+        <label>Total Grid Electricity Usage</label>
         <input type="number" step="0.1" id="wizTotalKwh" class="form-control" value="${wizardTempState.totalKwh}" />
       </div>
       <div class="form-group" style="margin-bottom:12px;">
-        <label>Water Bill Period (From - To)</label>
+        <label>Water Bill Period</label>
         <div class="date-range-wrapper">
           <input type="date" id="wizWaterStartDate" class="form-control" value="${wizardTempState.waterStartDate || '2026-05-01'}" />
           <span class="range-sep">to</span>
@@ -605,7 +605,7 @@ function renderWizardStep() {
         </div>
       </div>
       <div class="form-group" style="margin-bottom:12px;">
-        <label>Total Water Bill Amount (RM)</label>
+        <label>Total Water Bill Amount</label>
         <input type="number" step="0.01" id="wizWaterAmount" class="form-control" value="${wizardTempState.waterAmount}" />
       </div>
     `;
@@ -720,14 +720,14 @@ function renderWizardStep() {
       <div class="form-group" style="margin-bottom:16px;">
         <label>Choose Rate Calculation Strategy</label>
         <select id="wizRateMode" class="form-control select-control">
-          <option value="ceil" ${wizardTempState.rateMode === 'ceil' ? 'selected' : ''}>Ceil / Round Up (RM 0.33) - Recommended (House Surplus Carryover)</option>
+          <option value="ceil" ${wizardTempState.rateMode === 'ceil' ? 'selected' : ''}>Ceil / Round Up - Recommended (House Surplus Carryover)</option>
           <option value="round" ${wizardTempState.rateMode === 'round' ? 'selected' : ''}>Standard Round (2 Decimals)</option>
           <option value="exact" ${wizardTempState.rateMode === 'exact' ? 'selected' : ''}>Exact Floating Rate</option>
           <option value="manual" ${wizardTempState.rateMode === 'manual' ? 'selected' : ''}>Manual Custom Rate</option>
         </select>
       </div>
       <div id="wizManualRateGroup" class="form-group ${wizardTempState.rateMode === 'manual' ? '' : 'hidden'}">
-        <label>Custom Rate (RM / kWh)</label>
+        <label>Custom Rate</label>
         <input type="number" step="0.0001" id="wizManualRate" class="form-control" value="${wizardTempState.manualRate || 0.33}" />
       </div>
     `;

@@ -51,7 +51,7 @@
                 <input type="date" id="electricDate" class="form-control" value="2026-08-12" />
               </div>
               <div class="form-group">
-                <label>Water Bill Period (From - To)</label>
+                <label>Water Bill Period</label>
                 <div class="date-range-wrapper">
                   <input type="date" id="waterStartDate" class="form-control" value="2026-05-01" />
                   <span class="range-sep">to</span>
@@ -62,14 +62,14 @@
 
             <div class="form-row form-row-3">
               <div class="form-group">
-                <label for="electricAmount">Electric Bill (RM)</label>
+                <label for="electricAmount">Electric Bill</label>
                 <div class="input-prefix-wrapper">
                   <span class="prefix">RM</span>
                   <input type="number" step="0.01" id="electricAmount" class="form-control" value="157.15" required />
                 </div>
               </div>
               <div class="form-group">
-                <label for="prevBalance">Prev. Balance Deduction (RM)</label>
+                <label for="prevBalance">Prev. Balance Deduction</label>
                 <div class="input-prefix-wrapper">
                   <span class="prefix">RM</span>
                   <input type="number" step="0.01" id="prevBalance" class="form-control" value="2.42" />
@@ -77,7 +77,7 @@
                 <small class="helper-text">Carried over surplus from last month</small>
               </div>
               <div class="form-group">
-                <label for="totalKwh">Total Grid Usage (kWh)</label>
+                <label for="totalKwh">Total Grid Usage</label>
                 <div class="input-suffix-wrapper">
                   <input type="number" step="0.1" id="totalKwh" class="form-control" value="477" required />
                   <span class="suffix">kWh</span>
@@ -87,7 +87,7 @@
 
             <div class="form-row form-row-2">
               <div class="form-group">
-                <label for="waterAmount">Total Water Bill (RM)</label>
+                <label for="waterAmount">Total Water Bill</label>
                 <div class="input-prefix-wrapper">
                   <span class="prefix">RM</span>
                   <input type="number" step="0.01" id="waterAmount" class="form-control" value="7.00" required />
@@ -96,16 +96,16 @@
               <div class="form-group">
                 <label for="rateMode">Rate Calculation Strategy</label>
                 <select id="rateMode" class="form-control select-control">
-                  <option value="ceil" selected>Ceil / Round Up (RM 0.33) - Standard House Rule</option>
+                  <option value="ceil" selected>Ceil / Round Up - Standard House Rule</option>
                   <option value="round">Round (2 Decimals)</option>
                   <option value="exact">Exact Floating Rate</option>
-                  <option value="manual">Manual Fixed Rate (RM / kWh)</option>
+                  <option value="manual">Manual Fixed Rate</option>
                 </select>
               </div>
             </div>
 
             <div id="manualRateGroup" class="form-group hidden">
-              <label for="manualRate">Custom Electric Rate (RM per kWh)</label>
+              <label for="manualRate">Custom Electric Rate</label>
               <input type="number" step="0.0001" id="manualRate" class="form-control" placeholder="0.33" />
             </div>
           </div>
