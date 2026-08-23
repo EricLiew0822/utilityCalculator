@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a8a" />
+      <stop offset="50%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#0284c7" />
+    </linearGradient>
+    <linearGradient id="boltGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+    <linearGradient id="dropGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#0ea5e9" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <!-- Background Rounded Shield -->
+  <rect x="32" y="32" width="448" height="448" rx="110" fill="url(#bgGrad)" filter="url(#shadow)" />
+  
+  <!-- Outer Glow Ring -->
+  <rect x="34" y="34" width="444" height="444" rx="108" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="4" />
+
+  <!-- Integrated Utility Icon: Water Drop + Electricity Bolt -->
+  <!-- Water Droplet Silhouette -->
+  <path d="M 320,160 C 320,160 390,260 390,320 C 390,370 350,400 300,400 C 265,400 235,385 220,360 C 245,350 265,325 270,295 C 275,265 260,235 250,215 Z" fill="url(#dropGrad)" opacity="0.95" />
+
+  <!-- Lightning Bolt -->
+  <path d="M 235,110 L 135,270 L 225,270 L 180,410 L 320,230 L 230,230 Z" fill="url(#boltGrad)" filter="url(#shadow)" stroke="#d97706" stroke-width="4" stroke-linejoin="round" />
+
+  <!-- Highlight Sheen -->
+  <path d="M 215,130 L 155,260 L 225,260 L 205,320 L 235,245 L 290,245 Z" fill="#fef08a" opacity="0.6" />
+</svg>

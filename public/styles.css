@@ -53,16 +53,12 @@ body {
   gap: 12px;
 }
 
-.brand-icon {
-  font-size: 2rem;
-  background: var(--primary-light);
-  width: 52px;
-  height: 52px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius);
-  border: 1px solid #bfdbfe;
+.brand-logo-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  object-fit: contain;
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
 }
 
 .brand h1 {
