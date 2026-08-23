@@ -31,8 +31,6 @@ $$\text{Net Electric Amount} = \max(0, \text{Gross Electric Bill} - \text{Previo
 
 $$\text{Effective Unit Rate} = \text{ceil}\left(\frac{\text{Net Electric Amount}}{\text{Total Grid Usage (kWh)}}\right)$$
 
-> *Example: $\frac{\text{RM } (157.15 - 2.42)}{477\text{ kWh}} = 0.3244 \approx \text{RM } 0.33/\text{kWh}$*
-
 ### 2. Room Air Conditioner Cost
 $$\text{Room kWh} = \max(0, \text{Current Meter} - \text{Previous Meter})$$
 
