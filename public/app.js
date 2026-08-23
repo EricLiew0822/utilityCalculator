@@ -624,10 +624,18 @@ function generateFormattedReport(data) {
 
 function rollForwardNextMonth() {
   const currentBalance = parseFloat(elDispBalance.textContent.replace("RM", "").trim()) || 0;
+  const balanceMsg = currentBalance > 0 
+    ? `- Previous Balance deduction will be set to RM ${currentBalance.toFixed(2)}`
+    : `- No balance to carry down (Prev. Balance set to RM 0.00)`;
   
-  if (confirm(`Roll forward to next month?\n\n- Previous Balance deduction will be set to RM ${currentBalance.toFixed(2)}\n- Room Previous Meters updated to current readings\n- Electric bill, Water bill, Total Grid Usage, and Current Meter readings cleared for new input!`)) {
-    // Carry down the balance deduction
-    appState.prevBalance = currentBalance;
+  if (confirm(`Roll forward to next month?\n\n${balanceMsg}\n- Room Previous Meters updated to current readings\n- Electric bill, Water bill, Total Grid Usage, and Current Meter readings cleared for new input!`)) {
+    // Carry down balance deduction if > 0, otherwise clear input with placeholder 0.00
+    if (currentBalance > 0) {
+      appState.prevBalance = currentBalance.toFixed(2);
+    } else {
+      appState.prevBalance = "";
+    }
+    elPrevBalance.placeholder = "0.00";
 
     // Clear new month usage inputs
     appState.electricAmount = "";
