@@ -300,19 +300,13 @@ def prompt_user_for_bill() -> BillInput:
     water_amount = _prompt_float("• Total Water Bill amount (RM)", default=7.00, min_val=0.0)
 
     print("\n--- [2/3] Rate Calculation Strategy ---")
-    print("  1) Ceil / Round Up (e.g. 0.3244 -> RM 0.33) [Recommended for rental surplus carryover]")
-    print("  2) Standard Round (2 decimal places)")
-    print("  3) Exact Float")
-    print("  4) Manual Fixed Rate")
-    rate_choice = _prompt_str("• Choose calculation strategy (1/2/3/4)", default="1")
+    print("  1) Ceil / Round Up - Standard House Rule [Recommended for rental surplus carryover]")
+    print("  2) Manual Fixed Rate")
+    rate_choice = _prompt_str("• Choose calculation strategy (1/2)", default="1")
 
     rate_mode = "ceil"
     custom_rate = None
     if rate_choice == "2":
-        rate_mode = "round"
-    elif rate_choice == "3":
-        rate_mode = "exact"
-    elif rate_choice == "4":
         rate_mode = "manual"
         custom_rate = _prompt_float("  Enter custom rate (RM / kWh)", default=0.33)
 

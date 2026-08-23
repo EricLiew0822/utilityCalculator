@@ -721,9 +721,7 @@ function renderWizardStep() {
         <label>Choose Rate Calculation Strategy</label>
         <select id="wizRateMode" class="form-control select-control">
           <option value="ceil" ${wizardTempState.rateMode === 'ceil' ? 'selected' : ''}>Ceil / Round Up - Recommended (House Surplus Carryover)</option>
-          <option value="round" ${wizardTempState.rateMode === 'round' ? 'selected' : ''}>Standard Round (2 Decimals)</option>
-          <option value="exact" ${wizardTempState.rateMode === 'exact' ? 'selected' : ''}>Exact Floating Rate</option>
-          <option value="manual" ${wizardTempState.rateMode === 'manual' ? 'selected' : ''}>Manual Custom Rate</option>
+          <option value="manual" ${wizardTempState.rateMode === 'manual' ? 'selected' : ''}>Manual Fixed Rate</option>
         </select>
       </div>
       <div id="wizManualRateGroup" class="form-group ${wizardTempState.rateMode === 'manual' ? '' : 'hidden'}">
