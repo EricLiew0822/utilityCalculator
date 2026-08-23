@@ -12,15 +12,26 @@ An integrated utility billing application designed for housemates and shared ren
 
 ## 🌟 Key Features
 
-- **Accurate Rate Calculation**: Formulates net electricity unit rates by deducting prior surplus balances and applying the house ceiling rule to avoid deficits.
+- **Responsive Modern UI**: Rebuilt with **Bootstrap 5 CDN** for optimal usability across smartphones, tablets, and desktop widescreen displays.
+- **Accurate Rate Calculation**: Formulates net electricity unit rates by deducting prior surplus balances and applying the house ceiling rule to prevent under-collection.
 - **Sub-Meter AC Tracking**: Calculates exact room air conditioning consumption from previous and current meter readings, split equally across occupants in that room.
-- **Common Area Electricity Sharing**: Computes unmetered common usage (total grid kWh minus room sub-meters) and divides costs evenly across all tenants.
+- **Common Area Electricity Sharing**: Computes unmetered common usage (total grid kWh minus room sub-meters) and divides costs evenly across all house occupants.
 - **Per-Person Water Bill Division**: Splits water utility charges equally across housemates.
-- **Financial Reconciliation & Balance Carryover**: Automatically computes collected totals, actual utility payables, and exact surplus balances to deduct before next month's billing.
+- **Financial Reconciliation & Balance Carryover**: Computes collected totals, actual utility payables, and exact surplus balances to deduct before next month's billing.
 - **Printable A4 PDF Statement**: Generates an official, print-ready utility invoice statement (`invoice.html`) with customizable columns and one-click PDF printing.
-- **Copyable Summary Report**: Instant clipboard copying of formatted calculation breakdowns for house group messages.
-- **Browser Persistence**: Saves entered records locally via `localStorage` so data is preserved across sessions, while providing prefilled demo data for first-time visitors.
-- **One-Click Next Month Roll Forward**: Shifts current meter readings to previous readings, applies the ending surplus deduction, and clears usage inputs for fresh figures.
+- **Copyable Summary Report**: Instant clipboard copying of formatted calculation breakdowns for house chat groups.
+- **Browser Persistence**: Saves entered records locally via `localStorage` so data is preserved across sessions, with prefilled demo data for first-time visitors.
+- **One-Click Next Month Roll Forward**: Shifts current meter readings to previous readings, applies the ending surplus deduction, and clears monthly usage inputs for fresh figures.
+
+---
+
+## 🛠️ Tech Stack
+
+- **UI Framework**: [Bootstrap 5.3.3](https://getbootstrap.com/) via CDN & [Bootstrap Icons 1.11.3](https://icons.getbootstrap.com/)
+- **Typography**: [Plus Jakarta Sans](https://fonts.google.com/specimen/Plus+Jakarta+Sans) & [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono)
+- **Frontend Engine**: Pure Vanilla JavaScript with HTML5 `localStorage` persistence
+- **Backend & CLI**: Python 3 standard library (`dataclasses`, `math`, `unittest`)
+- **Hosting & Serverless**: [Netlify](https://www.netlify.com/) (Continuous Deployment & Python Functions)
 
 ---
 
@@ -64,9 +75,9 @@ utilityCalculator/
 │   └── functions/
 │       └── calculate.py        # Python serverless backend handler
 ├── public/                     # Frontend client (served by Netlify)
-│   ├── index.html              # Main calculator interface & inputs
+│   ├── index.html              # Responsive Bootstrap 5 interface & inputs
 │   ├── invoice.html            # Standalone printable A4 PDF statement
-│   ├── styles.css              # Modern responsive styling & card layouts
+│   ├── styles.css              # Custom styling overrides & PDF preview
 │   ├── app.js                  # Frontend calculation engine, state & PDF generator
 │   └── favicon.svg             # Custom application vector icon
 ├── src_python/
