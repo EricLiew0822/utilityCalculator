@@ -1,52 +1,86 @@
-# Integrated Electricity & Water Bill Calculator
+# House Utility Bill Calculator
 
-An integrated electricity and water bill splitting calculator designed for housemates / rental sharing with room air-conditioner sub-meters, common area consumption sharing, and automated month-to-month balance carryover.
-
-Built with **Python core logic** and hosted as a modern responsive web app ready for **Netlify**.
-
----
-
-## ⚡ Mathematical Model & Features
-
-1. **Unit Rate Formulation**:
-   $$\text{Rate} = \text{ceil}\left(\frac{\text{Electric Bill} - \text{Previous Balance Deduction}}{\text{Total Grid kWh}}\right)$$
-   *(e.g., $(157.15 - 2.42) / 477 = 0.3244 \approx \text{RM } 0.33/\text{kWh}$)*
-2. **Room AC Sub-metering**:
-   $$\text{Room AC Cost} = (\text{Curr Meter} - \text{Prev Meter}) \times \text{Rate}$$
-   Split equally among the occupants of the room.
-3. **Common Area Usage**:
-   $$\text{Common kWh} = \text{Total Grid kWh} - \sum \text{Room kWh}$$
-   $$\text{Common Cost / Person} = \frac{\text{Common kWh} \times \text{Rate}}{\text{Total Headcount}}$$
-4. **Water Bill Sharing**:
-   $$\text{Water Cost / Person} = \frac{\text{Total Water Bill}}{\text{Total Headcount}}$$
-5. **Reconciliation & Carryover**:
-   $$\text{Next Month Balance} = \text{Total Collected} - (\text{Electric Bill} + \text{Water Bill})$$
-   Automatically applied to next month's bill calculation!
-6. **One-Click WhatsApp Report**: Generates the exact formatted WhatsApp message to copy and send to house group chats.
+> ⚡ **Created with Gemini Antigravity**  
+> 🌐 **Live Web Application**: [https://utilitycalculator.netlify.app/](https://utilitycalculator.netlify.app/)  
+> 📦 **GitHub Repository**: [https://github.com/EricLiew0822/utilityCalculator](https://github.com/EricLiew0822/utilityCalculator)
 
 ---
 
-## 📁 Project Structure
+An integrated utility billing application designed for housemates and shared rental properties. It simplifies complex utility calculations with individual room air-conditioner sub-meters, equitable common area electricity sharing, per-person water bill division, and automatic month-to-month surplus balance carryover reconciliation.
+
+---
+
+## 🌟 Key Features
+
+- **Accurate Rate Calculation**: Formulates net electricity unit rates by deducting prior surplus balances and applying the house ceiling rule to avoid deficits.
+- **Sub-Meter AC Tracking**: Calculates exact room air conditioning consumption from previous and current meter readings, split equally across occupants in that room.
+- **Common Area Electricity Sharing**: Computes unmetered common usage (total grid kWh minus room sub-meters) and divides costs evenly across all tenants.
+- **Per-Person Water Bill Division**: Splits water utility charges equally across housemates.
+- **Financial Reconciliation & Balance Carryover**: Automatically computes collected totals, actual utility payables, and exact surplus balances to deduct before next month's billing.
+- **Printable A4 PDF Statement**: Generates an official, print-ready utility invoice statement (`invoice.html`) with customizable columns and one-click PDF printing.
+- **Copyable Summary Report**: Instant clipboard copying of formatted calculation breakdowns for house group messages.
+- **Browser Persistence**: Saves entered records locally via `localStorage` so data is preserved across sessions, while providing prefilled demo data for first-time visitors.
+- **One-Click Next Month Roll Forward**: Shifts current meter readings to previous readings, applies the ending surplus deduction, and clears usage inputs for fresh figures.
+
+---
+
+## 📐 Mathematical Formulation
+
+### 1. Electricity Unit Rate
+$$\text{Net Electric Amount} = \max(0, \text{Gross Electric Bill} - \text{Previous Balance Deduction})$$
+
+$$\text{Effective Unit Rate} = \text{ceil}\left(\frac{\text{Net Electric Amount}}{\text{Total Grid Usage (kWh)}}\right)$$
+
+> *Example: $\frac{\text{RM } (157.15 - 2.42)}{477\text{ kWh}} = 0.3244 \approx \text{RM } 0.33/\text{kWh}$*
+
+### 2. Room Air Conditioner Cost
+$$\text{Room kWh} = \max(0, \text{Current Meter} - \text{Previous Meter})$$
+
+$$\text{Room AC Share / Tenant} = \frac{\text{Room kWh} \times \text{Effective Unit Rate}}{\text{Room Tenant Count}}$$
+
+### 3. Common Area Electricity
+$$\text{Common Grid Usage (kWh)} = \max\left(0, \text{Total Grid kWh} - \sum \text{Room kWh}\right)$$
+
+$$\text{Common Electric / Tenant} = \frac{\text{Common Grid Usage} \times \text{Effective Unit Rate}}{\text{Total House Occupants}}$$
+
+### 4. Water Utility Share
+$$\text{Water Share / Tenant} = \frac{\text{Total Water Bill}}{\text{Total House Occupants}}$$
+
+### 5. Individual Total & Monthly Carryover
+$$\text{Tenant Payable} = \text{Common Electric} + \text{Room AC Share} + \text{Water Share}$$
+
+$$\text{Total Collected} = \sum \text{Round}(\text{Tenant Payable})$$
+
+$$\text{Actual Payable} = \text{Gross Electric Bill} + \text{Total Water Bill}$$
+
+$$\text{Next Month Surplus Carryover} = \max(0, \text{Total Collected} - \text{Actual Payable})$$
+
+---
+
+## 📂 Project Architecture
 
 ```
-bill-calculator/
-├── netlify.toml                # Netlify build configuration
+utilityCalculator/
+├── netlify.toml                # Netlify deployment and function routing configuration
 ├── netlify/
 │   └── functions/
-│       └── calculate.py        # Python serverless function handler
-├── public/                     # Static Web App (served by Netlify)
-│   ├── index.html              # Modern responsive UI
-│   ├── styles.css              # Custom styling, typography & cards
-│   └── app.js                  # Dynamic room builder, math engine & storage
+│       └── calculate.py        # Python serverless backend handler
+├── public/                     # Frontend client (served by Netlify)
+│   ├── index.html              # Main calculator interface & inputs
+│   ├── invoice.html            # Standalone printable A4 PDF statement
+│   ├── styles.css              # Modern responsive styling & card layouts
+│   ├── app.js                  # Frontend calculation engine, state & PDF generator
+│   └── favicon.svg             # Custom application vector icon
 ├── src_python/
-│   ├── calculator.py           # Core Python engine & dataclasses
-│   └── test_calculator.py      # Unit tests
+│   ├── calculator.py           # Core Python engine, dataclasses & CLI prompt
+│   ├── main.py                 # Interactive terminal runner
+│   └── test_calculator.py      # Automated unit test suite
 └── README.md
 ```
 
 ---
 
-## 🚀 Running & Testing
+## 💻 Local Development & Testing
 
 ### 1. Run Python Unit Tests
 ```bash
@@ -54,28 +88,31 @@ cd src_python
 python3 test_calculator.py
 ```
 
-### 2. Run Local Web Server
-You can preview the frontend locally with Python's built-in HTTP server:
+### 2. Run Terminal Interactive CLI
+```bash
+python3 src_python/main.py
+```
+
+### 3. Run Local Web Server
+Start a local web server to preview the frontend:
 ```bash
 python3 -m http.server 8000 --directory public
 ```
-Then open `http://localhost:8000` in your browser.
+Visit `http://localhost:8000` in your web browser.
 
 ---
 
-## 🌐 Deploying to Netlify
+## 🚀 Deployment
 
-### Option 1: Netlify CLI (Fastest)
-```bash
-npm install -g netlify-cli
-netlify deploy --prod --dir=public
-```
+The project is preconfigured for continuous deployment with **Netlify**.
 
-### Option 2: Git Repository (Continuous Deployment)
-1. Push this directory to your GitHub / GitLab repository.
-2. Log in to [Netlify](https://app.netlify.com).
-3. Click **"Add new site" -> "Import an existing project"**.
-4. Netlify will automatically detect `netlify.toml` with:
-   - **Publish directory**: `public`
-   - **Functions directory**: `netlify/functions`
-5. Click **Deploy Site**.
+1. Commit and push updates to the repository `main` branch.
+2. Netlify builds the site automatically using settings defined in [`netlify.toml`](file:///Users/ericlsyy/.gemini/antigravity/scratch/bill-calculator/netlify.toml):
+   - **Publish Directory**: `public`
+   - **Functions Directory**: `netlify/functions`
+
+---
+
+## 📄 License
+
+Open-source under the MIT License.
