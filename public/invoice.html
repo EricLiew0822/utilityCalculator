@@ -472,7 +472,7 @@
     });
 
     function loadInvoiceData() {
-      const saved = localStorage.getItem("bill_calc_state_v4") || localStorage.getItem("bill_calc_state_v2") || localStorage.getItem("bill_calc_state");
+      const saved = localStorage.getItem("utility_calculator_user_data") || localStorage.getItem("bill_calc_state_v4") || localStorage.getItem("bill_calc_state_v2") || localStorage.getItem("bill_calc_state");
       if (!saved) return;
       
       try {

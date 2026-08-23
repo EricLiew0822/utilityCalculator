@@ -36,7 +36,9 @@ const SAMPLE_REFERENCE_STATE = {
   ]
 };
 
-let appState = loadSavedState() || JSON.parse(JSON.stringify(DEFAULT_STATE));
+const STORAGE_KEY = "utility_calculator_user_data";
+
+let appState = loadSavedState() || JSON.parse(JSON.stringify(SAMPLE_REFERENCE_STATE));
 
 // --- DOM Elements ---
 const elElectricDate = document.getElementById("electricDate");
@@ -186,7 +188,7 @@ function attachEventListeners() {
 function resetAllInputs() {
   if (confirm("Are you sure you want to reset all input values to blank?")) {
     appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
-    localStorage.removeItem("bill_calc_state_v4");
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
     bindFormInputs();
     renderRooms();
     recalculate();
@@ -213,13 +215,20 @@ function saveInputState() {
   appState.rateMode = elRateMode.value;
   appState.manualRate = elManualRate.value !== "" ? parseFloat(elManualRate.value) : "";
 
-  localStorage.setItem("bill_calc_state_v4", JSON.stringify(appState));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+  } catch (e) {
+    console.warn("Could not persist state:", e);
+  }
 }
 
 function loadSavedState() {
   try {
-    const saved = localStorage.getItem("bill_calc_state_v4");
-    if (!saved) return null;
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) {
+      // First-time user: automatically provide the reference sample dataset
+      return JSON.parse(JSON.stringify(SAMPLE_REFERENCE_STATE));
+    }
     const parsed = JSON.parse(saved);
     if (parsed.rooms) {
       parsed.rooms.forEach(r => {
@@ -230,7 +239,7 @@ function loadSavedState() {
     }
     return parsed;
   } catch (e) {
-    return null;
+    return JSON.parse(JSON.stringify(SAMPLE_REFERENCE_STATE));
   }
 }
 
