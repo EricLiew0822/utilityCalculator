@@ -253,7 +253,7 @@ function formatElectricDate(dateStr) {
     const date = new Date(year, month - 1, day);
     if (isNaN(date.getTime())) return dateStr;
     const monthName = date.toLocaleDateString("en-US", { month: "long" });
-    return `By ${day} ${monthName} ${year}`;
+    return `${day} ${monthName} ${year}`;
   } catch (e) {
     return dateStr;
   }

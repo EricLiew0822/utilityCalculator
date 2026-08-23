@@ -291,7 +291,7 @@ def prompt_user_for_bill() -> BillInput:
     print("=======================================================\n")
 
     print("--- [1/3] Utility Invoices & Grid Information ---")
-    elec_period = _prompt_str("• Electric bill period / due date", default="By 12 August 2026")
+    elec_period = _prompt_str("• Electric bill period / due date", default="12 August 2026")
     water_period = _prompt_str("• Water bill period", default="May to July 2026")
     
     elec_amount = _prompt_float("• Total Electric Bill amount (RM)", default=157.15, min_val=0.0)
@@ -374,7 +374,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] in ("--sample", "-s"):
         # Run with default reference sample
         sample_input = BillInput(
-            billing_period_electric="By 12 August 2026",
+            billing_period_electric="12 August 2026",
             billing_period_water="May to July 2026",
             electric_amount=157.15,
             previous_balance=2.42,

@@ -8,7 +8,7 @@ from calculator import BillInput, Room, BillCalculator
 class TestBillCalculator(unittest.TestCase):
     def test_reference_sheet_exact_match(self):
         bill = BillInput(
-            billing_period_electric="By 12 August 2026",
+            billing_period_electric="12 August 2026",
             billing_period_water="May to July 2026",
             electric_amount=157.15,
             previous_balance=2.42,
