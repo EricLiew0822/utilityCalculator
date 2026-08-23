@@ -14,9 +14,9 @@ const DEFAULT_STATE = {
   rateMode: "ceil",
   manualRate: 0.33,
   rooms: [
-    { id: "room_1", name: "大房", prevMeter: 5574, currMeter: 5774, tenants: ["Bryan", "Lim"] },
-    { id: "room_2", name: "中房", prevMeter: 4693, currMeter: 4693, tenants: ["Eric"] },
-    { id: "room_3", name: "小房", prevMeter: 4255, currMeter: 4312, tenants: ["Honger"] }
+    { id: "room_1", name: "Master", prevMeter: 5574, currMeter: 5774, tenants: ["Bryan", "Lim"] },
+    { id: "room_2", name: "Middle", prevMeter: 4693, currMeter: 4693, tenants: ["Eric"] },
+    { id: "room_3", name: "Small", prevMeter: 4255, currMeter: 4312, tenants: ["Honger"] }
   ]
 };
 
@@ -262,7 +262,7 @@ function renderRooms() {
 
     roomEl.innerHTML = `
       <div class="room-card-header">
-        <input type="text" class="room-name-input" value="${escapeHtml(room.name)}" placeholder="Room Name (e.g. Master Room / 大房)" data-field="name" />
+        <input type="text" class="room-name-input" value="${escapeHtml(room.name)}" placeholder="Room Name (e.g. Master, Middle, Small)" data-field="name" />
         ${appState.rooms.length > 1 ? `<button type="button" class="btn-danger-icon btn-remove-room" title="Remove Room">✕</button>` : ''}
       </div>
       <div class="room-meter-grid">
@@ -621,7 +621,7 @@ function renderWizardStep() {
       return `
         <div class="room-card" style="margin-bottom:16px;">
           <div class="room-card-header">
-            <input type="text" class="room-name-input wiz-room-name" data-ridx="${rIdx}" value="${escapeHtml(r.name)}" placeholder="Room Name (e.g. Master Room / 大房)" />
+            <input type="text" class="room-name-input wiz-room-name" data-ridx="${rIdx}" value="${escapeHtml(r.name)}" placeholder="Room Name (e.g. Master, Middle, Small)" />
             ${wizardTempState.rooms.length > 1 ? `<button type="button" class="btn-danger-icon wiz-btn-remove-room" data-ridx="${rIdx}">✕</button>` : ''}
           </div>
           <div class="form-row">

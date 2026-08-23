@@ -381,9 +381,9 @@ if __name__ == "__main__":
             total_kwh=477.0,
             water_amount=7.00,
             rooms=[
-                Room(name="大房", prev_meter=5574, curr_meter=5774, tenants=["Bryan", "Lim"]),
-                Room(name="中房", prev_meter=4693, curr_meter=4693, tenants=["Eric"]),
-                Room(name="小房", prev_meter=4255, curr_meter=4312, tenants=["Honger"]),
+                Room(name="Master", prev_meter=5574, curr_meter=5774, tenants=["Bryan", "Lim"]),
+                Room(name="Middle", prev_meter=4693, curr_meter=4693, tenants=["Eric"]),
+                Room(name="Small", prev_meter=4255, curr_meter=4312, tenants=["Honger"]),
             ],
             rate_mode="ceil"
         )
