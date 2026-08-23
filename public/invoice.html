@@ -195,12 +195,15 @@
       width: 100%;
       border-collapse: collapse;
       font-size: 0.875rem;
+      table-layout: fixed;
     }
 
     th, td {
       padding: 10px 12px;
       text-align: left;
       border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+      box-sizing: border-box;
     }
 
     th {
@@ -209,10 +212,19 @@
       color: #334155;
       font-size: 0.8rem;
       text-transform: uppercase;
+      letter-spacing: 0.3px;
     }
 
     .text-right {
       text-align: right !important;
+    }
+
+    .text-left {
+      text-align: left !important;
+    }
+
+    .text-center {
+      text-align: center !important;
     }
 
     .tenant-badge {
@@ -402,15 +414,23 @@
     <!-- 2. Room Sub-meter Usages -->
     <div class="section-title">2. Room Air-Conditioner Sub-Meters</div>
     <div class="table-section">
-      <table class="room-table">
+      <table>
+        <colgroup>
+          <col style="width: 20%;" />
+          <col style="width: 16%;" />
+          <col style="width: 16%;" />
+          <col style="width: 16%;" />
+          <col style="width: 16%;" />
+          <col style="width: 16%;" />
+        </colgroup>
         <thead>
           <tr>
-            <th style="width: 22%;">Room</th>
-            <th class="text-right" style="width: 15%;">Previous Meter</th>
-            <th class="text-right" style="width: 15%;">Current Meter</th>
-            <th class="text-right" style="width: 16%;">Usage (kWh)</th>
-            <th class="text-right" style="width: 16%;">Total AC Cost</th>
-            <th class="text-right" style="width: 16%;">Per Tenant Share</th>
+            <th class="text-left">Room</th>
+            <th class="text-right">Previous Meter</th>
+            <th class="text-right">Current Meter</th>
+            <th class="text-right">Usage (kWh)</th>
+            <th class="text-right">Total AC Cost</th>
+            <th class="text-right">Per Tenant Share</th>
           </tr>
         </thead>
         <tbody id="docRoomTableBody">
@@ -423,14 +443,22 @@
     <div class="section-title">3. Individual Tenant Payable Breakdown</div>
     <div class="table-section">
       <table>
+        <colgroup>
+          <col style="width: 20%;" />
+          <col style="width: 16%;" />
+          <col style="width: 16%;" />
+          <col style="width: 16%;" />
+          <col style="width: 16%;" />
+          <col style="width: 16%;" />
+        </colgroup>
         <thead>
           <tr>
-            <th style="width: 22%;">Tenant Name</th>
-            <th style="width: 16%;">Room</th>
-            <th class="text-right" style="width: 15%;">Common Elec</th>
-            <th class="text-right" style="width: 15%;">Room AC</th>
-            <th class="text-right" style="width: 14%;">Water</th>
-            <th class="text-right" style="width: 18%;">Total Payable</th>
+            <th class="text-left">Tenant Name</th>
+            <th class="text-left">Room</th>
+            <th class="text-right">Common Elec</th>
+            <th class="text-right">Room AC</th>
+            <th class="text-right">Water</th>
+            <th class="text-right">Total Payable</th>
           </tr>
         </thead>
         <tbody id="docTenantTableBody">
@@ -576,7 +604,7 @@
       roomCalculations.forEach(r => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td><strong>${escapeHtml(r.name)}</strong></td>
+          <td class="text-left"><strong>${escapeHtml(r.name)}</strong></td>
           <td class="text-right">${r.prevMeter}</td>
           <td class="text-right">${r.currMeter}</td>
           <td class="text-right">${r.kwh.toFixed(0)} kWh</td>
@@ -592,8 +620,8 @@
       tenantRows.forEach(t => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td><span class="tenant-badge">${escapeHtml(t.tenant)}</span></td>
-          <td>${escapeHtml(t.room)}</td>
+          <td class="text-left"><span class="tenant-badge">${escapeHtml(t.tenant)}</span></td>
+          <td class="text-left">${escapeHtml(t.room)}</td>
           <td class="text-right">RM ${round2(t.common).toFixed(2)}</td>
           <td class="text-right">RM ${round2(t.roomAc).toFixed(2)}</td>
           <td class="text-right">RM ${round2(t.water).toFixed(2)}</td>
