@@ -289,7 +289,7 @@ function formatWaterPeriod(startStr, endStr) {
   }
 }
 
-// --- Room Rendering ---
+/// --- Room Rendering ---
 function renderRooms() {
   elRoomsContainer.innerHTML = "";
 
@@ -302,7 +302,7 @@ function renderRooms() {
 
   appState.rooms.forEach((room, roomIndex) => {
     const roomEl = document.createElement("div");
-    roomEl.className = "room-card";
+    roomEl.className = "card border shadow-sm room-card";
     roomEl.dataset.id = room.id;
 
     const prevVal = (room.prevMeter !== "" && room.prevMeter !== null && room.prevMeter !== undefined) ? parseFloat(room.prevMeter) : 0;
@@ -316,9 +316,10 @@ function renderRooms() {
     let tenantInputsHtml = room.tenants.map((tName, tIndex) => {
       const placeholderTenant = sampleTenantExamples[tIndex % sampleTenantExamples.length] || `Tenant ${tIndex + 1}`;
       return `
-        <div class="tenant-input-row" data-tindex="${tIndex}">
+        <div class="input-group input-group-sm tenant-input-row" data-tindex="${tIndex}">
+          <span class="input-group-text bg-light text-muted"><i class="bi bi-person"></i></span>
           <input type="text" class="form-control tenant-name-input" value="${escapeHtml(tName || '')}" placeholder="e.g. ${placeholderTenant}" />
-          ${room.tenants.length > 1 ? `<button type="button" class="btn-danger-icon btn-remove-tenant" title="Remove Tenant">✕</button>` : ''}
+          ${room.tenants.length > 1 ? `<button type="button" class="btn btn-outline-danger btn-remove-tenant" title="Remove Tenant"><i class="bi bi-x"></i></button>` : ''}
         </div>
       `;
     }).join("");
@@ -326,31 +327,36 @@ function renderRooms() {
     const placeholderRoomName = sampleNames[roomIndex % sampleNames.length] || `Room ${roomIndex + 1}`;
 
     roomEl.innerHTML = `
-      <div class="room-card-header">
-        <input type="text" class="room-name-input" value="${escapeHtml(room.name || '')}" placeholder="e.g. ${placeholderRoomName}" data-field="name" />
-        ${appState.rooms.length > 1 ? `<button type="button" class="btn-danger-icon btn-remove-room" title="Remove Room">✕</button>` : ''}
+      <div class="card-header bg-light d-flex justify-content-between align-items-center py-2 px-3">
+        <div class="d-flex align-items-center gap-2 flex-grow-1 me-2">
+          <i class="bi bi-door-open text-primary"></i>
+          <input type="text" class="form-control form-control-sm fw-bold border-0 bg-transparent room-name-input" value="${escapeHtml(room.name || '')}" placeholder="e.g. ${placeholderRoomName}" data-field="name" style="max-width: 200px;" />
+        </div>
+        ${appState.rooms.length > 1 ? `<button type="button" class="btn btn-sm btn-outline-danger btn-remove-room" title="Remove Room"><i class="bi bi-trash3"></i></button>` : ''}
       </div>
-      <div class="room-meter-grid">
-        <div class="form-group">
-          <label>Previous Meter Reading</label>
-          <input type="number" step="1" class="form-control room-meter-input" value="${(room.prevMeter !== '' && room.prevMeter !== null && room.prevMeter !== undefined) ? room.prevMeter : ''}" placeholder="5574" data-field="prevMeter" />
+      <div class="card-body p-3">
+        <div class="row g-2 align-items-end mb-3">
+          <div class="col-sm-4 col-12">
+            <label class="form-label extra-small fw-semibold text-secondary mb-1">Previous Meter</label>
+            <input type="number" step="1" class="form-control form-control-sm room-meter-input" value="${(room.prevMeter !== '' && room.prevMeter !== null && room.prevMeter !== undefined) ? room.prevMeter : ''}" placeholder="5574" data-field="prevMeter" />
+          </div>
+          <div class="col-sm-4 col-12">
+            <label class="form-label extra-small fw-semibold text-secondary mb-1">Current Meter</label>
+            <input type="number" step="1" class="form-control form-control-sm room-meter-input" value="${(room.currMeter !== '' && room.currMeter !== null && room.currMeter !== undefined) ? room.currMeter : ''}" placeholder="5774" data-field="currMeter" />
+          </div>
+          <div class="col-sm-4 col-12">
+            <label class="form-label extra-small fw-semibold text-secondary mb-1">Room AC Usage</label>
+            <div class="badge bg-primary-subtle text-primary border border-primary-subtle d-block py-2 text-center fw-bold room-kwh-badge">${kwhUsed.toFixed(0)} kWh</div>
+          </div>
         </div>
-        <div class="form-group">
-          <label>Current Meter Reading</label>
-          <input type="number" step="1" class="form-control room-meter-input" value="${(room.currMeter !== '' && room.currMeter !== null && room.currMeter !== undefined) ? room.currMeter : ''}" placeholder="5774" data-field="currMeter" />
-        </div>
-        <div class="form-group">
-          <label>Room AC kWh</label>
-          <div class="usage-badge room-kwh-badge">${kwhUsed.toFixed(0)} kWh</div>
-        </div>
-      </div>
-      <div class="tenants-section">
-        <div class="tenants-list-header">
-          <label>Tenants staying in this room (${room.tenants.length}):</label>
-          <button type="button" class="btn btn-sm btn-outline btn-add-tenant">+ Add Tenant</button>
-        </div>
-        <div class="tenant-inputs-grid">
-          ${tenantInputsHtml}
+        <div class="border-top pt-2 mt-2">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="extra-small fw-semibold text-secondary">Room Occupants (${room.tenants.length}):</span>
+            <button type="button" class="btn btn-sm btn-outline-primary py-0 px-2 btn-add-tenant" style="font-size: 0.75rem;"><i class="bi bi-plus"></i> Add Tenant</button>
+          </div>
+          <div class="d-flex flex-column gap-2">
+            ${tenantInputsHtml}
+          </div>
         </div>
       </div>
     `;
@@ -448,52 +454,55 @@ function recalculate() {
   let totalRoomKwh = 0;
   const roomCalculations = [];
 
-  (appState.rooms || []).forEach((r, idx) => {
-    const prev = (r.prevMeter !== "" && r.prevMeter !== null && r.prevMeter !== undefined) ? parseFloat(r.prevMeter) : 0;
-    const curr = (r.currMeter !== "" && r.currMeter !== null && r.currMeter !== undefined) ? parseFloat(r.currMeter) : 0;
-    const kwh = Math.max(0, curr - prev);
+  appState.rooms.forEach(r => {
+    const p = (r.prevMeter !== "" && r.prevMeter !== null && r.prevMeter !== undefined) ? parseFloat(r.prevMeter) : 0;
+    const c = (r.currMeter !== "" && r.currMeter !== null && r.currMeter !== undefined) ? parseFloat(r.currMeter) : 0;
+    const kwh = Math.max(0, c - p);
     totalRoomKwh += kwh;
 
-    const roomName = (r.name && r.name.trim()) ? r.name.trim() : `Room ${idx + 1}`;
+    const validTenants = Array.isArray(r.tenants) ? r.tenants.map(t => t.trim()).filter(Boolean) : [];
+    const tenantCount = validTenants.length > 0 ? validTenants.length : 1;
+    totalHeadcount += validTenants.length;
 
-    const tenantList = (Array.isArray(r.tenants) ? r.tenants : [r.tenants])
-      .map(t => (typeof t === "string" ? t.trim() : ""))
-      .filter(Boolean);
-
-    // If no tenant names typed yet, treat as 1 unnamed tenant for preview
-    const effectiveTenants = tenantList.length > 0 ? tenantList : [`Tenant ${totalHeadcount + 1}`];
-
-    totalHeadcount += effectiveTenants.length;
     const roomCost = kwh * unitRate;
-    const perTenantAc = effectiveTenants.length > 0 ? (roomCost / effectiveTenants.length) : 0;
+    const perTenantAc = tenantCount > 0 ? roomCost / tenantCount : 0;
 
     roomCalculations.push({
-      name: roomName,
-      prevMeter: prev,
-      currMeter: curr,
-      kwh: kwh,
-      roomCost: roomCost,
-      perTenantAc: perTenantAc,
-      tenants: effectiveTenants
+      id: r.id,
+      name: r.name || "Unnamed Room",
+      prevMeter: p,
+      currMeter: c,
+      kwh,
+      roomCost,
+      tenantCount,
+      tenants: validTenants.length > 0 ? validTenants : ["(No Tenant)"],
+      perTenantAc
     });
   });
 
-  const commonKwh = Math.max(0, totalKwh - totalRoomKwh);
-  const commonCostPerPerson = totalHeadcount > 0 ? ((commonKwh * unitRate) / totalHeadcount) : 0;
-  const waterCostPerPerson = totalHeadcount > 0 ? (waterAmount / totalHeadcount) : 0;
+  if (totalHeadcount === 0) totalHeadcount = 1;
 
-  // 3. Individual Breakdown
+  // 3. Common Area & Water Calculations
+  const commonKwh = Math.max(0, totalKwh - totalRoomKwh);
+  const commonCostPerPerson = totalHeadcount > 0 ? (commonKwh * unitRate) / totalHeadcount : 0;
+  const waterCostPerPerson = totalHeadcount > 0 ? waterAmount / totalHeadcount : 0;
+
+  // Individual Tenant Rows
   const tenantRows = [];
   roomCalculations.forEach(r => {
-    r.tenants.forEach(t => {
-      const total = commonCostPerPerson + r.perTenantAc + waterCostPerPerson;
+    r.tenants.forEach(tName => {
+      const roomAc = r.perTenantAc;
+      const common = commonCostPerPerson;
+      const water = waterCostPerPerson;
+      const total = common + roomAc + water;
+
       tenantRows.push({
-        tenant: t,
+        tenant: tName,
         room: r.name,
-        common: commonCostPerPerson,
-        roomAc: r.perTenantAc,
-        water: waterCostPerPerson,
-        total: total
+        common,
+        roomAc,
+        water,
+        total
       });
     });
   });
@@ -503,7 +512,7 @@ function recalculate() {
   const nextMonthBalance = Math.max(0, totalCollected - actualPayable);
 
   // 4. Update UI Displays
-  elDispUnitRate.innerHTML = `RM ${unitRate.toFixed(2)}<span class="unit">/kWh</span>`;
+  elDispUnitRate.innerHTML = `RM ${unitRate.toFixed(2)}<span class="fs-6 text-muted">/kWh</span>`;
   elDispNetElectric.textContent = `Net: RM ${netElectric.toFixed(2)} (raw: ${rawRate.toFixed(4)})`;
   elDispCommonPerPerson.textContent = `RM ${round2(commonCostPerPerson).toFixed(2)}`;
   elDispCommonKwh.textContent = `${commonKwh.toFixed(0)} kWh / ${totalHeadcount} pax`;
@@ -515,12 +524,12 @@ function recalculate() {
   tenantRows.forEach(t => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td><strong>${escapeHtml(t.tenant)}</strong></td>
-      <td><span class="helper-text">${escapeHtml(t.room)}</span></td>
+      <td class="ps-4"><strong>${escapeHtml(t.tenant)}</strong></td>
+      <td><span class="badge bg-light text-secondary border">${escapeHtml(t.room)}</span></td>
       <td>RM ${round2(t.common).toFixed(2)}</td>
       <td>RM ${round2(t.roomAc).toFixed(2)}</td>
       <td>RM ${round2(t.water).toFixed(2)}</td>
-      <td class="text-right"><span class="tenant-total">RM ${round2(t.total).toFixed(2)}</span></td>
+      <td class="text-end pe-4"><span class="tenant-total-badge">RM ${round2(t.total).toFixed(2)}</span></td>
     `;
     elTenantTableBody.appendChild(tr);
   });
@@ -546,11 +555,11 @@ function recalculate() {
     elMiniTenantRows.innerHTML = "";
     tenantRows.forEach(t => {
       const row = document.createElement("div");
-      row.className = "pdf-mini-row";
+      row.className = "d-flex justify-content-between p-2 border-bottom extra-small";
       row.innerHTML = `
-        <span><strong>${escapeHtml(t.tenant)}</strong></span>
-        <span style="color:#64748b;">${escapeHtml(t.room)}</span>
-        <span class="text-right"><strong>RM ${round2(t.total).toFixed(2)}</strong></span>
+        <span class="w-50 fw-semibold text-dark">${escapeHtml(t.tenant)}</span>
+        <span class="w-25 text-muted">${escapeHtml(t.room)}</span>
+        <span class="w-25 text-end fw-bold text-primary">RM ${round2(t.total).toFixed(2)}</span>
       `;
       elMiniTenantRows.appendChild(row);
     });

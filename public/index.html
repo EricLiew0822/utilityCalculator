@@ -4,164 +4,190 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>House Utility Bill Calculator | Electricity & Water</title>
+  
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  
+  <!-- Icons -->
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="apple-touch-icon" href="favicon.svg" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+  <!-- Bootstrap 5 CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous" />
+  
+  <!-- Custom Overrides & Enhancements -->
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
-  <div class="app-container">
+<body class="bg-light">
+  <div class="container py-4">
     <!-- Header -->
-    <header class="app-header">
-      <div class="brand">
-        <img src="favicon.svg" alt="Utility Calculator Logo" class="brand-logo-img" />
+    <header class="navbar navbar-expand-lg bg-white rounded-3 shadow-sm p-3 mb-4 border d-flex flex-wrap justify-content-between align-items-center gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <img src="favicon.svg" alt="Utility Calculator Logo" class="brand-logo-img" width="48" height="48" />
         <div>
-          <h1>House Utility Bill Calculator</h1>
-          <p class="subtitle">Interactive Electricity & Water Bill Splitter with Sub-Meter & Balance Carryover</p>
+          <h1 class="h4 mb-0 fw-bold text-primary">House Utility Bill Calculator</h1>
+          <p class="text-muted small mb-0">Electricity & Water Bill Splitter with Sub-Meter & Balance Carryover</p>
         </div>
       </div>
-      <div class="header-actions">
-        <button id="btnResetAll" class="btn btn-secondary" title="Reset all input fields to blank">
-          <span class="icon">🗑️</span> Reset All Values
+      <div class="d-flex flex-wrap gap-2">
+        <button id="btnResetAll" class="btn btn-outline-danger btn-sm" title="Reset all input fields to blank">
+          <i class="bi bi-trash3 me-1"></i> Reset All Values
         </button>
-        <button id="btnLoadSample" class="btn btn-secondary" title="Load sample bill data for preview and testing">
-          <span class="icon">🔄</span> Load Sample Data
+        <button id="btnLoadSample" class="btn btn-outline-primary btn-sm" title="Load sample bill data for preview and testing">
+          <i class="bi bi-arrow-repeat me-1"></i> Load Sample Data
         </button>
-        <button id="btnRollForward" class="btn btn-secondary" title="Use current ending balance & readings for next month">
-          <span class="icon">⏭️</span> Roll Forward to Next Month
+        <button id="btnRollForward" class="btn btn-primary btn-sm shadow-sm" title="Use current ending balance & readings for next month">
+          <i class="bi bi-fast-forward me-1"></i> Roll Forward to Next Month
         </button>
       </div>
     </header>
 
     <!-- Main Grid Layout -->
-    <main class="calculator-grid">
+    <main class="row g-4">
       <!-- Left Column: Inputs -->
-      <section class="input-panel">
+      <section class="col-lg-6 col-12 d-flex flex-column gap-4">
         <!-- 1. Utility Invoices Card -->
-        <div class="card">
-          <div class="card-header">
-            <h2><span class="step-badge">1</span> Utility Bill Summary</h2>
+        <div class="card shadow-sm border">
+          <div class="card-header bg-white py-3 border-bottom d-flex align-items-center">
+            <h2 class="h5 mb-0 fw-bold text-dark d-flex align-items-center">
+              <span class="step-badge me-2">1</span> Utility Bill Summary
+            </h2>
           </div>
-          <div class="card-body">
-            <div class="form-row">
-              <div class="form-group">
-                <label for="electricDate">Electric Bill Due Date</label>
+          <div class="card-body p-4">
+            <div class="row g-3 mb-3">
+              <div class="col-sm-6 col-12">
+                <label for="electricDate" class="form-label fw-semibold small text-secondary">Electric Bill Due Date</label>
                 <input type="date" id="electricDate" class="form-control" />
               </div>
-              <div class="form-group">
-                <label>Water Bill Period</label>
-                <div class="date-range-wrapper">
+              <div class="col-sm-6 col-12">
+                <label class="form-label fw-semibold small text-secondary">Water Bill Period</label>
+                <div class="input-group">
                   <input type="date" id="waterStartDate" class="form-control" />
-                  <span class="range-sep">to</span>
+                  <span class="input-group-text bg-light text-muted small">to</span>
                   <input type="date" id="waterEndDate" class="form-control" />
                 </div>
               </div>
             </div>
 
-            <div class="form-row form-row-3">
-              <div class="form-group">
-                <label for="electricAmount">Electric Bill</label>
-                <div class="input-prefix-wrapper">
-                  <span class="prefix">RM</span>
+            <div class="row g-3 mb-3">
+              <div class="col-md-4 col-sm-6 col-12">
+                <label for="electricAmount" class="form-label fw-semibold small text-secondary">Electric Bill</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light fw-bold text-secondary">RM</span>
                   <input type="number" step="0.01" id="electricAmount" class="form-control" placeholder="157.15" />
                 </div>
               </div>
-              <div class="form-group">
-                <label for="prevBalance">Prev. Balance Deduction</label>
-                <div class="input-prefix-wrapper">
-                  <span class="prefix">RM</span>
+              <div class="col-md-4 col-sm-6 col-12">
+                <label for="prevBalance" class="form-label fw-semibold small text-secondary">Prev. Balance Deduction</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light fw-bold text-secondary">RM</span>
                   <input type="number" step="0.01" id="prevBalance" class="form-control" placeholder="2.42" />
                 </div>
-                <small class="helper-text">Carried over surplus from last month</small>
+                <div class="form-text small text-muted">Carried surplus from last month</div>
               </div>
-              <div class="form-group">
-                <label for="totalKwh">Total Grid Usage</label>
-                <div class="input-suffix-wrapper">
+              <div class="col-md-4 col-sm-12 col-12">
+                <label for="totalKwh" class="form-label fw-semibold small text-secondary">Total Grid Usage</label>
+                <div class="input-group">
                   <input type="number" step="0.1" id="totalKwh" class="form-control" placeholder="477" />
-                  <span class="suffix">kWh</span>
+                  <span class="input-group-text bg-light fw-bold text-secondary">kWh</span>
                 </div>
               </div>
             </div>
 
-            <div class="form-row form-row-2">
-              <div class="form-group">
-                <label for="waterAmount">Total Water Bill</label>
-                <div class="input-prefix-wrapper">
-                  <span class="prefix">RM</span>
+            <div class="row g-3">
+              <div class="col-sm-6 col-12">
+                <label for="waterAmount" class="form-label fw-semibold small text-secondary">Total Water Bill</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light fw-bold text-secondary">RM</span>
                   <input type="number" step="0.01" id="waterAmount" class="form-control" placeholder="7.00" />
                 </div>
               </div>
-              <div class="form-group">
-                <label for="rateMode">Rate Calculation Strategy</label>
-                <select id="rateMode" class="form-control select-control">
+              <div class="col-sm-6 col-12">
+                <label for="rateMode" class="form-label fw-semibold small text-secondary">Rate Calculation Strategy</label>
+                <select id="rateMode" class="form-select">
                   <option value="ceil" selected>Ceil / Round Up - Standard House Rule</option>
                   <option value="manual">Manual Fixed Rate</option>
                 </select>
               </div>
             </div>
 
-            <div id="manualRateGroup" class="form-group hidden">
-              <label for="manualRate">Custom Electric Rate</label>
-              <input type="number" step="0.0001" id="manualRate" class="form-control" placeholder="0.33" />
+            <div id="manualRateGroup" class="mt-3 hidden">
+              <label for="manualRate" class="form-label fw-semibold small text-secondary">Custom Electric Rate</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light fw-bold text-secondary">RM</span>
+                <input type="number" step="0.0001" id="manualRate" class="form-control" placeholder="0.33" />
+                <span class="input-group-text bg-light small">/ kWh</span>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- 2. Rooms & Sub-meters Card -->
-        <div class="card">
-          <div class="card-header space-between">
-            <h2><span class="step-badge">2</span> Rooms, AC Sub-Meters & Tenant Names</h2>
-            <button type="button" id="btnAddRoom" class="btn btn-sm btn-outline">
-              <span class="icon">+</span> Add Room
+        <div class="card shadow-sm border">
+          <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h2 class="h5 mb-0 fw-bold text-dark d-flex align-items-center">
+              <span class="step-badge me-2">2</span> Rooms, AC Sub-Meters & Tenant Names
+            </h2>
+            <button type="button" id="btnAddRoom" class="btn btn-outline-primary btn-sm">
+              <i class="bi bi-plus-lg me-1"></i> Add Room
             </button>
           </div>
-          <div class="card-body">
-            <div id="roomsContainer" class="rooms-container">
-              <!-- Dynamically rendered room cards with individual tenant names -->
+          <div class="card-body p-4">
+            <div id="roomsContainer" class="d-flex flex-column gap-3">
+              <!-- Dynamically rendered room cards -->
             </div>
           </div>
         </div>
       </section>
 
       <!-- Right Column: Live Results & Formatted Output -->
-      <section class="results-panel">
+      <section class="col-lg-6 col-12 d-flex flex-column gap-4">
         <!-- Metric Summary Pills -->
-        <div class="metric-ribbon">
-          <div class="metric-card">
-            <span class="metric-label">Effective Rate</span>
-            <span class="metric-value" id="dispUnitRate">RM 0.33<span class="unit">/kWh</span></span>
-            <span class="metric-sub" id="dispNetElectric">Net: RM 154.73</span>
+        <div class="row g-3">
+          <div class="col-md-4 col-sm-6 col-12">
+            <div class="card border-0 shadow-sm p-3 h-100 bg-white border-start border-primary border-4">
+              <span class="text-muted text-uppercase fw-bold extra-small">Effective Rate</span>
+              <div class="h4 mb-0 fw-bold text-primary" id="dispUnitRate">RM 0.33<span class="fs-6 text-muted">/kWh</span></div>
+              <span class="text-muted extra-small mt-1" id="dispNetElectric">Net: RM 154.73</span>
+            </div>
           </div>
-          <div class="metric-card">
-            <span class="metric-label">Common Electric</span>
-            <span class="metric-value" id="dispCommonPerPerson">RM 18.15</span>
-            <span class="metric-sub" id="dispCommonKwh">220 kWh / 4 pax</span>
+          <div class="col-md-4 col-sm-6 col-12">
+            <div class="card border-0 shadow-sm p-3 h-100 bg-white border-start border-info border-4">
+              <span class="text-muted text-uppercase fw-bold extra-small">Common Electric</span>
+              <div class="h4 mb-0 fw-bold text-dark" id="dispCommonPerPerson">RM 18.15</div>
+              <span class="text-muted extra-small mt-1" id="dispCommonKwh">220 kWh / 4 pax</span>
+            </div>
           </div>
-          <div class="metric-card">
-            <span class="metric-label">Water Per Person</span>
-            <span class="metric-value" id="dispWaterPerPerson">RM 1.75</span>
-            <span class="metric-sub" id="dispTotalTenants">4 Total Tenants</span>
+          <div class="col-md-4 col-sm-12 col-12">
+            <div class="card border-0 shadow-sm p-3 h-100 bg-white border-start border-success border-4">
+              <span class="text-muted text-uppercase fw-bold extra-small">Water Per Person</span>
+              <div class="h4 mb-0 fw-bold text-dark" id="dispWaterPerPerson">RM 1.75</div>
+              <span class="text-muted extra-small mt-1" id="dispTotalTenants">4 Total Tenants</span>
+            </div>
           </div>
         </div>
 
         <!-- Tenant Breakdown Table -->
-        <div class="card">
-          <div class="card-header">
-            <h2><span class="step-badge">3</span> Individual Tenant Breakdown</h2>
+        <div class="card shadow-sm border">
+          <div class="card-header bg-white py-3 border-bottom">
+            <h2 class="h5 mb-0 fw-bold text-dark d-flex align-items-center">
+              <span class="step-badge me-2">3</span> Individual Tenant Breakdown
+            </h2>
           </div>
-          <div class="card-body">
+          <div class="card-body p-0">
             <div class="table-responsive">
-              <table class="tenant-table">
-                <thead>
+              <table class="table table-hover align-middle mb-0 tenant-table">
+                <thead class="table-light">
                   <tr>
-                    <th>Tenant Name</th>
+                    <th class="ps-4">Tenant Name</th>
                     <th>Room</th>
                     <th>COMMON ELECTRICITY</th>
                     <th>Room AC</th>
                     <th>Water</th>
-                    <th class="text-right">Total Payable</th>
+                    <th class="text-end pe-4">Total Payable</th>
                   </tr>
                 </thead>
                 <tbody id="tenantTableBody">
@@ -171,68 +197,70 @@
             </div>
 
             <!-- Financial Reconciliation Box -->
-            <div class="reconciliation-box">
-              <div class="recon-row">
+            <div class="p-4 bg-light border-top">
+              <div class="d-flex justify-content-between mb-2 small text-secondary">
                 <span>Total Collected from Tenants:</span>
-                <strong id="dispCollected">RM 164.41</strong>
+                <strong class="text-dark" id="dispCollected">RM 164.41</strong>
               </div>
-              <div class="recon-row">
+              <div class="d-flex justify-content-between mb-2 small text-secondary">
                 <span>Actual Incurred (Electric + Water):</span>
                 <span id="dispActual">RM 164.15</span>
               </div>
-              <div class="recon-divider"></div>
-              <div class="recon-row highlight">
-                <span>Next Month Carryover Balance:</span>
-                <strong class="balance-badge" id="dispBalance">RM 0.26</strong>
+              <hr class="my-2" />
+              <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-bold text-dark">Next Month Carryover Balance:</span>
+                <span class="badge bg-warning text-dark fs-6 px-3 py-2 fw-bold" id="dispBalance">RM 0.26</span>
               </div>
-              <p class="balance-note">💡 This balance will automatically be deducted from next month's electric bill before calculating the unit rate.</p>
+              <p class="small text-muted mb-0 mt-2">💡 This balance will automatically be deducted from next month's electric bill before calculating the unit rate.</p>
             </div>
           </div>
         </div>
 
         <!-- 4. Report & PDF Invoice Card -->
-        <div class="card">
-          <div class="card-header space-between">
-            <h2><span class="step-badge">4</span> PDF Invoice Statement</h2>
-            <div class="header-buttons">
-              <button id="btnOpenPdf" class="btn btn-primary" title="Open and export PDF invoice in a new tab">
-                <span class="icon">📄</span> Export to PDF
+        <div class="card shadow-sm border">
+          <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h2 class="h5 mb-0 fw-bold text-dark d-flex align-items-center">
+              <span class="step-badge me-2">4</span> PDF Invoice Statement
+            </h2>
+            <div class="d-flex gap-2">
+              <button id="btnOpenPdf" class="btn btn-primary btn-sm shadow-sm" title="Open and export PDF invoice in a new tab">
+                <i class="bi bi-file-earmark-pdf me-1"></i> Export to PDF
               </button>
-              <button id="btnCopyReport" class="btn btn-secondary" title="Copy formatted summary report to clipboard">
-                <span class="icon">📋</span> Copy Report
+              <button id="btnCopyReport" class="btn btn-outline-secondary btn-sm" title="Copy formatted summary report to clipboard">
+                <i class="bi bi-clipboard me-1"></i> Copy Report
               </button>
             </div>
           </div>
-          <div class="card-body">
+          <div class="card-body p-4">
             <!-- PDF Live Miniature Preview Box -->
-            <div class="pdf-preview-wrapper" id="pdfPreviewWrapper" title="Click to open full PDF invoice in a new page">
+            <div class="pdf-preview-wrapper position-relative rounded-3 p-3 shadow-sm border bg-white cursor-pointer" id="pdfPreviewWrapper" title="Click to open full PDF invoice in a new page">
               <div class="pdf-hover-overlay">
-                <span class="pdf-hover-badge">🔍 Click to Open PDF in New Tab</span>
+                <span class="badge bg-primary fs-6 px-3 py-2 shadow"><i class="bi bi-box-arrow-up-right me-1"></i> Click to Open PDF in New Tab</span>
               </div>
               <div class="pdf-preview-doc" id="pdfPreviewDoc">
-                <div class="pdf-mini-header">
-                  <div class="pdf-mini-brand">
-                    <img src="favicon.svg" alt="Logo" class="mini-logo" />
+                <div class="d-flex justify-content-between align-items-center pb-2 mb-2 border-bottom">
+                  <div class="d-flex align-items-center gap-2">
+                    <img src="favicon.svg" alt="Logo" width="28" height="28" />
                     <div>
-                      <strong class="mini-title">Utility Bill Statement</strong>
-                      <span class="mini-meta" id="miniDocPeriod">By 12 August 2026</span>
+                      <strong class="d-block small text-primary">Utility Bill Statement</strong>
+                      <span class="d-block extra-small text-muted" id="miniDocPeriod">By 12 August 2026</span>
                     </div>
                   </div>
-                  <span class="mini-status-badge">Official PDF</span>
+                  <span class="badge bg-primary-subtle text-primary border border-primary-subtle extra-small">Official PDF</span>
                 </div>
-                <div class="pdf-mini-stats">
-                  <div><span>Rate:</span> <strong id="miniDocRate">RM 0.33/kWh</strong></div>
-                  <div><span>Grid:</span> <span id="miniDocGrid">477 kWh</span></div>
-                  <div><span>Water:</span> <span id="miniDocWater">RM 1.75/pax</span></div>
-                  <div><span>Carryover:</span> <strong id="miniDocBalance">RM 0.26</strong></div>
+                <div class="row g-2 p-2 bg-light rounded border mb-2 extra-small text-secondary">
+                  <div class="col-6 col-md-3"><span>Rate:</span> <strong class="text-dark d-block" id="miniDocRate">RM 0.33/kWh</strong></div>
+                  <div class="col-6 col-md-3"><span>Grid:</span> <span class="d-block" id="miniDocGrid">477 kWh</span></div>
+                  <div class="col-6 col-md-3"><span>Water:</span> <span class="d-block" id="miniDocWater">RM 1.75/pax</span></div>
+                  <div class="col-6 col-md-3"><span>Carryover:</span> <strong class="text-dark d-block" id="miniDocBalance">RM 0.26</strong></div>
                 </div>
-                <div class="pdf-mini-table">
-                  <div class="pdf-mini-row header">
-                    <span>Tenant</span>
-                    <span>Room</span>
-                    <span class="text-right">Total Payable</span>
+                <div class="border rounded overflow-hidden">
+                  <div class="d-flex bg-light fw-bold extra-small text-muted p-2 border-bottom">
+                    <span class="w-50">Tenant</span>
+                    <span class="w-25">Room</span>
+                    <span class="w-25 text-end">Total</span>
                   </div>
-                  <div id="miniTenantRows">
+                  <div id="miniTenantRows" class="small">
                     <!-- Populated dynamically -->
                   </div>
                 </div>
@@ -244,9 +272,11 @@
     </main>
 
     <!-- Toast Notification -->
-    <div id="toast" class="toast">Copied to clipboard!</div>
+    <div id="toast" class="toast-popup">Copied to clipboard!</div>
   </div>
 
+  <!-- Bootstrap 5 JS Bundle CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   <script src="app.js"></script>
 </body>
 </html>
