@@ -524,12 +524,12 @@ function recalculate() {
   tenantRows.forEach(t => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td class="ps-4"><strong>${escapeHtml(t.tenant)}</strong></td>
-      <td><span class="badge bg-light text-secondary border">${escapeHtml(t.room)}</span></td>
-      <td>RM ${round2(t.common).toFixed(2)}</td>
-      <td>RM ${round2(t.roomAc).toFixed(2)}</td>
-      <td>RM ${round2(t.water).toFixed(2)}</td>
-      <td class="text-end pe-4"><span class="tenant-total-badge">RM ${round2(t.total).toFixed(2)}</span></td>
+      <td class="ps-3 text-start"><strong>${escapeHtml(t.tenant)}</strong></td>
+      <td class="text-center"><span class="badge bg-light text-secondary border">${escapeHtml(t.room)}</span></td>
+      <td class="text-center">RM ${round2(t.common).toFixed(2)}</td>
+      <td class="text-center">RM ${round2(t.roomAc).toFixed(2)}</td>
+      <td class="text-center">RM ${round2(t.water).toFixed(2)}</td>
+      <td class="text-end pe-3"><span class="tenant-total-badge">RM ${round2(t.total).toFixed(2)}</span></td>
     `;
     elTenantTableBody.appendChild(tr);
   });

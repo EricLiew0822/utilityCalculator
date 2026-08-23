@@ -77,14 +77,14 @@
                 <label for="electricAmount" class="form-label fw-semibold small text-secondary">Electric Bill</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light fw-bold text-secondary">RM</span>
-                  <input type="number" step="0.01" id="electricAmount" class="form-control" placeholder="0" />
+                  <input type="number" step="0.01" id="electricAmount" class="form-control" placeholder="0.00" />
                 </div>
               </div>
               <div class="col-md-4 col-sm-6 col-12">
                 <label for="prevBalance" class="form-label fw-semibold small text-secondary">Prev. Balance Deduction</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light fw-bold text-secondary">RM</span>
-                  <input type="number" step="0.01" id="prevBalance" class="form-control" placeholder="0" />
+                  <input type="number" step="0.01" id="prevBalance" class="form-control" placeholder="0.00" />
                 </div>
                 <div class="form-text small text-muted">Carried surplus from last month</div>
               </div>
@@ -102,7 +102,7 @@
                 <label for="waterAmount" class="form-label fw-semibold small text-secondary">Total Water Bill</label>
                 <div class="input-group">
                   <span class="input-group-text bg-light fw-bold text-secondary">RM</span>
-                  <input type="number" step="0.01" id="waterAmount" class="form-control" placeholder="0" />
+                  <input type="number" step="0.01" id="waterAmount" class="form-control" placeholder="0.00" />
                 </div>
               </div>
               <div class="col-sm-6 col-12">
@@ -118,7 +118,7 @@
               <label for="manualRate" class="form-label fw-semibold small text-secondary">Custom Electric Rate</label>
               <div class="input-group">
                 <span class="input-group-text bg-light fw-bold text-secondary">RM</span>
-                <input type="number" step="0.0001" id="manualRate" class="form-control" placeholder="0" />
+                <input type="number" step="0.0001" id="manualRate" class="form-control" placeholder="0.00" />
                 <span class="input-group-text bg-light small">/ kWh</span>
               </div>
             </div>
@@ -180,14 +180,22 @@
           <div class="card-body p-0">
             <div class="table-responsive">
               <table class="table table-hover align-middle mb-0 tenant-table">
+                <colgroup>
+                  <col style="width: 22%;" />
+                  <col style="width: 14%;" />
+                  <col style="width: 20%;" />
+                  <col style="width: 14%;" />
+                  <col style="width: 12%;" />
+                  <col style="width: 18%;" />
+                </colgroup>
                 <thead class="table-light">
                   <tr>
-                    <th class="ps-4">Tenant Name</th>
-                    <th>Room</th>
-                    <th>COMMON ELECTRICITY</th>
-                    <th>Room AC</th>
-                    <th>Water</th>
-                    <th class="text-end pe-4">Total Payable</th>
+                    <th class="ps-3 text-start">Tenant Name</th>
+                    <th class="text-center">Room</th>
+                    <th class="text-center">COMMON ELECTRICITY</th>
+                    <th class="text-center">Room AC</th>
+                    <th class="text-center">Water</th>
+                    <th class="text-end pe-3">Total Payable</th>
                   </tr>
                 </thead>
                 <tbody id="tenantTableBody">
