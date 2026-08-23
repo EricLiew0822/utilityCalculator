@@ -23,8 +23,8 @@
         </div>
       </div>
       <div class="header-actions">
-        <button id="btnOpenWizard" class="btn btn-primary" title="Launch step-by-step interactive prompt wizard">
-          <span class="icon">🧙</span> Interactive Prompt Wizard
+        <button id="btnResetAll" class="btn btn-secondary" title="Reset all input fields to blank">
+          <span class="icon">🗑️</span> Reset All Values
         </button>
         <button id="btnLoadSample" class="btn btn-secondary" title="Load the sample data matching the reference calculation">
           <span class="icon">🔄</span> Load Reference Sample
@@ -242,23 +242,6 @@
         </div>
       </section>
     </main>
-
-    <!-- Interactive Step-by-Step Prompt Modal Wizard -->
-    <div id="wizardModal" class="modal-overlay hidden">
-      <div class="modal-card">
-        <div class="modal-header">
-          <h3 id="wizardTitle">Interactive Prompt Wizard</h3>
-          <button id="btnCloseWizard" class="btn-close-modal">✕</button>
-        </div>
-        <div class="modal-body" id="wizardBody">
-          <!-- Wizard steps dynamically injected here -->
-        </div>
-        <div class="modal-footer">
-          <button id="btnWizardPrev" class="btn btn-secondary hidden">Back</button>
-          <button id="btnWizardNext" class="btn btn-primary">Next</button>
-        </div>
-      </div>
-    </div>
 
     <!-- Toast Notification -->
     <div id="toast" class="toast">Copied to clipboard!</div>

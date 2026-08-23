@@ -51,6 +51,7 @@ const elManualRate = document.getElementById("manualRate");
 const elManualRateGroup = document.getElementById("manualRateGroup");
 const elRoomsContainer = document.getElementById("roomsContainer");
 const elBtnAddRoom = document.getElementById("btnAddRoom");
+const elBtnResetAll = document.getElementById("btnResetAll");
 const elBtnLoadSample = document.getElementById("btnLoadSample");
 const elBtnRollForward = document.getElementById("btnRollForward");
 const elBtnCopyReport = document.getElementById("btnCopyReport");
@@ -76,21 +77,9 @@ const elTenantTableBody = document.getElementById("tenantTableBody");
 const elDispCollected = document.getElementById("dispCollected");
 const elDispActual = document.getElementById("dispActual");
 const elDispBalance = document.getElementById("dispBalance");
-const elReportPreview = document.getElementById("reportPreview");
 const elToast = document.getElementById("toast");
 
-// Wizard Elements
-const elBtnOpenWizard = document.getElementById("btnOpenWizard");
-const elWizardModal = document.getElementById("wizardModal");
-const elBtnCloseWizard = document.getElementById("btnCloseWizard");
-const elWizardBody = document.getElementById("wizardBody");
-const elBtnWizardPrev = document.getElementById("btnWizardPrev");
-const elBtnWizardNext = document.getElementById("btnWizardNext");
-const elWizardTitle = document.getElementById("wizardTitle");
-
-let currentWizardStep = 1;
-const TOTAL_WIZARD_STEPS = 3;
-let wizardTempState = {};
+let latestFormattedReport = "";
 
 // --- Initialization ---
 function init() {
@@ -154,6 +143,12 @@ function attachEventListeners() {
     recalculate();
   });
 
+  if (elBtnResetAll) {
+    elBtnResetAll.addEventListener("click", () => {
+      resetAllInputs();
+    });
+  }
+
   elBtnLoadSample.addEventListener("click", () => {
     appState = JSON.parse(JSON.stringify(SAMPLE_REFERENCE_STATE));
     bindFormInputs();
@@ -167,9 +162,11 @@ function attachEventListeners() {
     rollForwardNextMonth();
   });
 
-  elBtnCopyReport.addEventListener("click", () => {
-    copyReportToClipboard();
-  });
+  if (elBtnCopyReport) {
+    elBtnCopyReport.addEventListener("click", () => {
+      copyReportToClipboard();
+    });
+  }
 
   if (elBtnOpenPdf) {
     elBtnOpenPdf.addEventListener("click", () => {
@@ -184,12 +181,17 @@ function attachEventListeners() {
       window.open("invoice.html", "_blank");
     });
   }
+}
 
-  // Wizard Modal
-  elBtnOpenWizard.addEventListener("click", openWizard);
-  elBtnCloseWizard.addEventListener("click", closeWizard);
-  elBtnWizardPrev.addEventListener("click", wizardGoPrev);
-  elBtnWizardNext.addEventListener("click", wizardGoNext);
+function resetAllInputs() {
+  if (confirm("Are you sure you want to reset all input values to blank?")) {
+    appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
+    localStorage.removeItem("bill_calc_state_v4");
+    bindFormInputs();
+    renderRooms();
+    recalculate();
+    showToast("All input values have been reset to blank.");
+  }
 }
 
 function toggleManualRate() {
@@ -519,6 +521,12 @@ function recalculate() {
   elDispBalance.textContent = `RM ${nextMonthBalance.toFixed(2)}`;
 
   // Update Live Miniature PDF Preview
+  const electricFormattedDate = formatElectricDate(elElectricDate ? elElectricDate.value : "");
+  const waterFormattedPeriod = formatWaterPeriod(
+    elWaterStartDate ? elWaterStartDate.value : "",
+    elWaterEndDate ? elWaterEndDate.value : ""
+  );
+
   if (elMiniDocPeriod) elMiniDocPeriod.textContent = electricFormattedDate;
   if (elMiniDocRate) elMiniDocRate.textContent = `RM ${unitRate.toFixed(2)}/kWh`;
   if (elMiniDocGrid) elMiniDocGrid.textContent = `${totalKwh.toFixed(0)} kWh`;
@@ -539,13 +547,7 @@ function recalculate() {
     });
   }
 
-  // 5. Generate Formatted WhatsApp Text
-  const electricFormattedDate = formatElectricDate(elElectricDate ? elElectricDate.value : "");
-  const waterFormattedPeriod = formatWaterPeriod(
-    elWaterStartDate ? elWaterStartDate.value : "",
-    elWaterEndDate ? elWaterEndDate.value : ""
-  );
-
+  // 5. Generate Formatted WhatsApp Text for Copy Function
   generateFormattedReport({
     electricPeriod: electricFormattedDate,
     waterPeriod: waterFormattedPeriod,
@@ -566,8 +568,6 @@ function recalculate() {
     nextMonthBalance
   });
 }
-
-let latestFormattedReport = "";
 
 function generateFormattedReport(data) {
   const roomKwhString = data.roomCalculations.map(r => `${r.kwh.toFixed(0)}`).join(" – ");
@@ -602,9 +602,6 @@ function generateFormattedReport(data) {
   lines.push(`\n*Balance : RM ${data.nextMonthBalance.toFixed(2)}* ➔ *use for next month bill deduction before calculation.*`);
 
   latestFormattedReport = lines.join("\n");
-  if (elReportPreview) {
-    elReportPreview.textContent = latestFormattedReport;
-  }
 }
 
 function rollForwardNextMonth() {
@@ -643,250 +640,6 @@ function copyReportToClipboard() {
     document.body.removeChild(textarea);
     showToast("Report copied to clipboard!");
   });
-}
-
-// =====================================================================
-// Interactive Wizard Modal Prompter
-// =====================================================================
-
-function openWizard() {
-  wizardTempState = JSON.parse(JSON.stringify(appState));
-  currentWizardStep = 1;
-  elWizardModal.classList.remove("hidden");
-  renderWizardStep();
-}
-
-function closeWizard() {
-  elWizardModal.classList.add("hidden");
-}
-
-function renderWizardStep() {
-  elWizardTitle.textContent = `Interactive Prompt Wizard (Step ${currentWizardStep} of ${TOTAL_WIZARD_STEPS})`;
-  elBtnWizardPrev.classList.toggle("hidden", currentWizardStep === 1);
-  elBtnWizardNext.textContent = currentWizardStep === TOTAL_WIZARD_STEPS ? "Finish & Calculate ✨" : "Next ➔";
-
-  if (currentWizardStep === 1) {
-    elWizardBody.innerHTML = `
-      <div class="wizard-step-title">⚡ Step 1: Utility Invoices & Consumption</div>
-      <div class="form-group" style="margin-bottom:12px;">
-        <label>Electric Bill Due Date</label>
-        <input type="date" id="wizElecDate" class="form-control" value="${wizardTempState.electricDate || ''}" />
-      </div>
-      <div class="form-group" style="margin-bottom:12px;">
-        <label>Total Electric Bill Amount</label>
-        <input type="number" step="0.01" id="wizElecAmount" class="form-control" value="${wizardTempState.electricAmount || ''}" placeholder="157.15" />
-      </div>
-      <div class="form-group" style="margin-bottom:12px;">
-        <label>Previous Month Balance Carryover</label>
-        <input type="number" step="0.01" id="wizPrevBalance" class="form-control" value="${wizardTempState.prevBalance || ''}" placeholder="2.42" />
-        <small class="helper-text">Deducted before calculating electricity rate</small>
-      </div>
-      <div class="form-group" style="margin-bottom:12px;">
-        <label>Total Grid Electricity Usage</label>
-        <input type="number" step="0.1" id="wizTotalKwh" class="form-control" value="${wizardTempState.totalKwh || ''}" placeholder="477" />
-      </div>
-      <div class="form-group" style="margin-bottom:12px;">
-        <label>Water Bill Period</label>
-        <div class="date-range-wrapper">
-          <input type="date" id="wizWaterStartDate" class="form-control" value="${wizardTempState.waterStartDate || ''}" />
-          <span class="range-sep">to</span>
-          <input type="date" id="wizWaterEndDate" class="form-control" value="${wizardTempState.waterEndDate || ''}" />
-        </div>
-      </div>
-      <div class="form-group" style="margin-bottom:12px;">
-        <label>Total Water Bill Amount</label>
-        <input type="number" step="0.01" id="wizWaterAmount" class="form-control" value="${wizardTempState.waterAmount || ''}" placeholder="7.00" />
-      </div>
-    `;
-  } else if (currentWizardStep === 2) {
-    if (!wizardTempState.rooms || wizardTempState.rooms.length === 0) {
-      wizardTempState.rooms = [{ id: "room_1", name: "", prevMeter: "", currMeter: "", tenants: [""] }];
-    }
-
-    const sampleRoomExamples = ["Master", "Middle", "Small", "Studio"];
-    const sampleTenantExamples = ["Bryan", "Lim", "Eric", "Honger"];
-
-    let roomsHtml = wizardTempState.rooms.map((r, rIdx) => {
-      const pRoom = sampleRoomExamples[rIdx % sampleRoomExamples.length] || `Room ${rIdx + 1}`;
-      
-      let tHtml = r.tenants.map((t, tIdx) => {
-        const pTenant = sampleTenantExamples[tIdx % sampleTenantExamples.length] || `Tenant ${tIdx + 1}`;
-        return `
-          <div class="tenant-input-row" style="margin-bottom:6px;">
-            <input type="text" class="form-control wiz-tenant-name" data-ridx="${rIdx}" data-tidx="${tIdx}" value="${escapeHtml(t || '')}" placeholder="e.g. ${pTenant}" />
-            ${r.tenants.length > 1 ? `<button type="button" class="btn-danger-icon wiz-btn-remove-tenant" data-ridx="${rIdx}" data-tidx="${tIdx}">✕</button>` : ''}
-          </div>
-        `;
-      }).join("");
-
-      return `
-        <div class="room-card" style="margin-bottom:16px;">
-          <div class="room-card-header">
-            <input type="text" class="room-name-input wiz-room-name" data-ridx="${rIdx}" value="${escapeHtml(r.name || '')}" placeholder="e.g. ${pRoom}" />
-            ${wizardTempState.rooms.length > 1 ? `<button type="button" class="btn-danger-icon wiz-btn-remove-room" data-ridx="${rIdx}">✕</button>` : ''}
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label>Previous Meter</label>
-              <input type="number" class="form-control wiz-prev-meter" data-ridx="${rIdx}" value="${r.prevMeter !== undefined && r.prevMeter !== null ? r.prevMeter : ''}" placeholder="5574" />
-            </div>
-            <div class="form-group">
-              <label>Current Meter</label>
-              <input type="number" class="form-control wiz-curr-meter" data-ridx="${rIdx}" value="${r.currMeter !== undefined && r.currMeter !== null ? r.currMeter : ''}" placeholder="5774" />
-            </div>
-          </div>
-          <div style="margin-top:8px;">
-            <div class="tenants-list-header">
-              <label>Tenant Names in ${escapeHtml(r.name || pRoom)}:</label>
-              <button type="button" class="btn btn-sm btn-outline wiz-btn-add-tenant" data-ridx="${rIdx}">+ Add Tenant</button>
-            </div>
-            <div class="tenant-inputs-grid">${tHtml}</div>
-          </div>
-        </div>
-      `;
-    }).join("");
-
-    elWizardBody.innerHTML = `
-      <div class="wizard-step-title">🏠 Step 2: Rooms, AC Meters & Tenant Names</div>
-      <div style="margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
-        <span class="helper-text">Configuring ${wizardTempState.rooms.length} room(s)</span>
-        <button type="button" id="wizBtnAddRoom" class="btn btn-sm btn-outline">+ Add Room</button>
-      </div>
-      <div id="wizRoomsContainer">${roomsHtml}</div>
-    `;
-
-    // Bind step 2 events
-    document.getElementById("wizBtnAddRoom").addEventListener("click", () => {
-      wizardTempState.rooms.push({
-        id: "room_" + Date.now(),
-        name: "",
-        prevMeter: "",
-        currMeter: "",
-        tenants: [""]
-      });
-      renderWizardStep();
-    });
-
-    elWizardBody.querySelectorAll(".wiz-room-name").forEach(input => {
-      input.addEventListener("input", (e) => {
-        wizardTempState.rooms[e.target.dataset.ridx].name = e.target.value;
-      });
-    });
-
-    elWizardBody.querySelectorAll(".wiz-prev-meter").forEach(input => {
-      input.addEventListener("input", (e) => {
-        wizardTempState.rooms[e.target.dataset.ridx].prevMeter = e.target.value !== "" ? parseFloat(e.target.value) : "";
-      });
-    });
-
-    elWizardBody.querySelectorAll(".wiz-curr-meter").forEach(input => {
-      input.addEventListener("input", (e) => {
-        wizardTempState.rooms[e.target.dataset.ridx].currMeter = e.target.value !== "" ? parseFloat(e.target.value) : "";
-      });
-    });
-
-    elWizardBody.querySelectorAll(".wiz-tenant-name").forEach(input => {
-      input.addEventListener("input", (e) => {
-        wizardTempState.rooms[e.target.dataset.ridx].tenants[e.target.dataset.tidx] = e.target.value;
-      });
-    });
-
-    elWizardBody.querySelectorAll(".wiz-btn-add-tenant").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        const rIdx = e.target.dataset.ridx;
-        wizardTempState.rooms[rIdx].tenants.push("");
-        renderWizardStep();
-      });
-    });
-
-    elWizardBody.querySelectorAll(".wiz-btn-remove-tenant").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        const { ridx, tidx } = e.target.dataset;
-        wizardTempState.rooms[ridx].tenants.splice(tidx, 1);
-        renderWizardStep();
-      });
-    });
-
-    elWizardBody.querySelectorAll(".wiz-btn-remove-room").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        const { ridx } = e.target.dataset;
-        wizardTempState.rooms.splice(ridx, 1);
-        renderWizardStep();
-      });
-    });
-
-  } else if (currentWizardStep === 3) {
-    elWizardBody.innerHTML = `
-      <div class="wizard-step-title">⚙️ Step 3: Rate Strategy & Calculation</div>
-      <div class="form-group" style="margin-bottom:16px;">
-        <label>Choose Rate Calculation Strategy</label>
-        <select id="wizRateMode" class="form-control select-control">
-          <option value="ceil" ${wizardTempState.rateMode === 'ceil' ? 'selected' : ''}>Ceil / Round Up - Recommended (House Surplus Carryover)</option>
-          <option value="manual" ${wizardTempState.rateMode === 'manual' ? 'selected' : ''}>Manual Fixed Rate</option>
-        </select>
-      </div>
-      <div id="wizManualRateGroup" class="form-group ${wizardTempState.rateMode === 'manual' ? '' : 'hidden'}">
-        <label>Custom Rate</label>
-        <input type="number" step="0.0001" id="wizManualRate" class="form-control" value="${wizardTempState.manualRate || ''}" placeholder="0.33" />
-      </div>
-    `;
-
-    const wizRateMode = document.getElementById("wizRateMode");
-    const wizManualRateGroup = document.getElementById("wizManualRateGroup");
-    wizRateMode.addEventListener("change", (e) => {
-      wizardTempState.rateMode = e.target.value;
-      wizManualRateGroup.classList.toggle("hidden", wizardTempState.rateMode !== "manual");
-    });
-    document.getElementById("wizManualRate")?.addEventListener("input", (e) => {
-      wizardTempState.manualRate = e.target.value !== "" ? parseFloat(e.target.value) : "";
-    });
-  }
-}
-
-function wizardGoNext() {
-  saveCurrentWizardStepData();
-
-  if (currentWizardStep < TOTAL_WIZARD_STEPS) {
-    currentWizardStep++;
-    renderWizardStep();
-  } else {
-    // Finish wizard
-    appState = JSON.parse(JSON.stringify(wizardTempState));
-    bindFormInputs();
-    renderRooms();
-    saveInputState();
-    recalculate();
-    closeWizard();
-    showToast("✨ Calculation generated successfully!");
-  }
-}
-
-function wizardGoPrev() {
-  saveCurrentWizardStepData();
-  if (currentWizardStep > 1) {
-    currentWizardStep--;
-    renderWizardStep();
-  }
-}
-
-function saveCurrentWizardStepData() {
-  if (currentWizardStep === 1) {
-    const elD = document.getElementById("wizElecDate");
-    const elA = document.getElementById("wizElecAmount");
-    const elB = document.getElementById("wizPrevBalance");
-    const elK = document.getElementById("wizTotalKwh");
-    const elWS = document.getElementById("wizWaterStartDate");
-    const elWE = document.getElementById("wizWaterEndDate");
-    const elWA = document.getElementById("wizWaterAmount");
-
-    if (elD) wizardTempState.electricDate = elD.value;
-    if (elA) wizardTempState.electricAmount = elA.value !== "" ? parseFloat(elA.value) : "";
-    if (elB) wizardTempState.prevBalance = elB.value !== "" ? parseFloat(elB.value) : "";
-    if (elK) wizardTempState.totalKwh = elK.value !== "" ? parseFloat(elK.value) : "";
-    if (elWS) wizardTempState.waterStartDate = elWS.value;
-    if (elWE) wizardTempState.waterEndDate = elWE.value;
-    if (elWA) wizardTempState.waterAmount = elWA.value !== "" ? parseFloat(elWA.value) : "";
-  }
 }
 
 function round2(num) {
