@@ -364,7 +364,7 @@
       </div>
       <div class="invoice-meta">
         <span class="meta-badge">Official Statement</span>
-        <div class="meta-date" id="docGeneratedDate">Generated: 23 Aug 2026</div>
+        <div class="meta-date" id="docGeneratedDate">Generated: -</div>
       </div>
     </div>
 
@@ -592,7 +592,12 @@
       const nextMonthBalance = Math.max(0, totalCollected - actualPayable);
 
       // Populate DOM Elements
-      document.getElementById("docGeneratedDate").textContent = `Generated: ${new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}`;
+      const now = new Date();
+      const day = String(now.getDate()).padStart(2, "0");
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      const month = monthNames[now.getMonth()];
+      const year = now.getFullYear();
+      document.getElementById("docGeneratedDate").textContent = `Generated: ${day} ${month} ${year}`;
       document.getElementById("docElecDate").textContent = elecDateStr;
       document.getElementById("docGrossElec").textContent = `RM ${electricAmount.toFixed(2)}`;
       document.getElementById("docPrevBalance").textContent = `- RM ${prevBalance.toFixed(2)}`;
