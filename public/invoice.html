@@ -214,12 +214,12 @@
       font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 0.3px;
-      text-align: center !important;
       word-break: break-word;
+      text-align: center;
     }
 
     td {
-      text-align: left !important;
+      text-align: left;
     }
 
     .text-right {
@@ -432,12 +432,12 @@
         </colgroup>
         <thead>
           <tr>
-            <th>Room</th>
-            <th>Previous Meter</th>
-            <th>Current Meter</th>
-            <th>Usage (kWh)</th>
-            <th>Total AC Cost</th>
-            <th>Per Tenant Share</th>
+            <th class="text-left">Room</th>
+            <th class="text-center">Previous Meter</th>
+            <th class="text-center">Current Meter</th>
+            <th class="text-center">Usage (kWh)</th>
+            <th class="text-center">Total AC Cost</th>
+            <th class="text-right">Per Tenant Share</th>
           </tr>
         </thead>
         <tbody id="docRoomTableBody">
@@ -460,12 +460,12 @@
         </colgroup>
         <thead>
           <tr>
-            <th>Tenant Name</th>
-            <th>Room</th>
-            <th>COMMON ELECTRICITY</th>
-            <th>Room AC</th>
-            <th>Water</th>
-            <th>Total Payable</th>
+            <th class="text-left">Tenant Name</th>
+            <th class="text-center">Room</th>
+            <th class="text-center">COMMON ELECTRICITY</th>
+            <th class="text-center">Room AC</th>
+            <th class="text-center">Water</th>
+            <th class="text-right">Total Payable</th>
           </tr>
         </thead>
         <tbody id="docTenantTableBody">
@@ -614,9 +614,9 @@
           <td class="text-left"><strong>${escapeHtml(r.name)}</strong></td>
           <td class="text-center">${r.prevMeter}</td>
           <td class="text-center">${r.currMeter}</td>
-          <td class="text-left">${r.kwh.toFixed(0)} kWh</td>
-          <td class="text-left">RM ${r.roomCost.toFixed(2)}</td>
-          <td class="text-left"><strong>RM ${r.perTenantAc.toFixed(2)}</strong></td>
+          <td class="text-center">${r.kwh.toFixed(0)} kWh</td>
+          <td class="text-center">RM ${r.roomCost.toFixed(2)}</td>
+          <td class="text-right"><strong>RM ${r.perTenantAc.toFixed(2)}</strong></td>
         `;
         roomTbody.appendChild(tr);
       });
@@ -630,9 +630,9 @@
           <td class="text-left"><span class="tenant-badge">${escapeHtml(t.tenant)}</span></td>
           <td class="text-center">${escapeHtml(t.room)}</td>
           <td class="text-center">RM ${round2(t.common).toFixed(2)}</td>
-          <td class="text-left">RM ${round2(t.roomAc).toFixed(2)}</td>
-          <td class="text-left">RM ${round2(t.water).toFixed(2)}</td>
-          <td class="text-left"><span class="amount-badge">RM ${round2(t.total).toFixed(2)}</span></td>
+          <td class="text-center">RM ${round2(t.roomAc).toFixed(2)}</td>
+          <td class="text-center">RM ${round2(t.water).toFixed(2)}</td>
+          <td class="text-right"><span class="amount-badge">RM ${round2(t.total).toFixed(2)}</span></td>
         `;
         tenantTbody.appendChild(tr);
       });
