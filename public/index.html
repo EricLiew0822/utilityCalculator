@@ -190,16 +190,60 @@
           </div>
         </div>
 
-        <!-- Copyable Report Card -->
+        <!-- 4. Report & PDF Invoice Card -->
         <div class="card">
           <div class="card-header space-between">
-            <h2><span class="step-badge">4</span> WhatsApp / Chat Formatted Report</h2>
-            <button id="btnCopyReport" class="btn btn-primary">
-              <span class="icon">📋</span> Copy Message
-            </button>
+            <h2><span class="step-badge">4</span> PDF Invoice & Chat Report</h2>
+            <div class="header-buttons">
+              <button id="btnOpenPdf" class="btn btn-primary" title="Open and export PDF invoice in a new tab">
+                <span class="icon">📄</span> Export to PDF
+              </button>
+              <button id="btnCopyReport" class="btn btn-secondary" title="Copy WhatsApp Formatted Message">
+                <span class="icon">📋</span> Copy Text
+              </button>
+            </div>
           </div>
           <div class="card-body">
-            <pre id="reportPreview" class="report-preview"></pre>
+            <!-- PDF Live Miniature Preview Box -->
+            <div class="pdf-preview-wrapper" id="pdfPreviewWrapper" title="Click to open full PDF invoice in a new page">
+              <div class="pdf-hover-overlay">
+                <span class="pdf-hover-badge">🔍 Click to Open PDF in New Tab</span>
+              </div>
+              <div class="pdf-preview-doc" id="pdfPreviewDoc">
+                <div class="pdf-mini-header">
+                  <div class="pdf-mini-brand">
+                    <img src="favicon.svg" alt="Logo" class="mini-logo" />
+                    <div>
+                      <strong class="mini-title">Utility Bill Statement</strong>
+                      <span class="mini-meta" id="miniDocPeriod">By 12 August 2026</span>
+                    </div>
+                  </div>
+                  <span class="mini-status-badge">Official PDF</span>
+                </div>
+                <div class="pdf-mini-stats">
+                  <div><span>Rate:</span> <strong id="miniDocRate">RM 0.33/kWh</strong></div>
+                  <div><span>Grid:</span> <span id="miniDocGrid">477 kWh</span></div>
+                  <div><span>Water:</span> <span id="miniDocWater">RM 1.75/pax</span></div>
+                  <div><span>Carryover:</span> <strong id="miniDocBalance">RM 0.26</strong></div>
+                </div>
+                <div class="pdf-mini-table">
+                  <div class="pdf-mini-row header">
+                    <span>Tenant</span>
+                    <span>Room</span>
+                    <span class="text-right">Total Payable</span>
+                  </div>
+                  <div id="miniTenantRows">
+                    <!-- Populated dynamically -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- WhatsApp Monospace Box Toggle / Details -->
+            <details class="whatsapp-details">
+              <summary class="whatsapp-summary">📱 View WhatsApp Chat Message Format</summary>
+              <pre id="reportPreview" class="report-preview"></pre>
+            </details>
           </div>
         </div>
       </section>

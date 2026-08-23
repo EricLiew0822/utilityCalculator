@@ -538,19 +538,189 @@ label {
   margin-top: 10px;
 }
 
-/* Monospace Report */
+/* PDF Preview Box & Export */
+.header-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.pdf-preview-wrapper {
+  position: relative;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 16px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.06);
+  transition: all 0.25s ease;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.pdf-preview-wrapper:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -4px rgba(37, 99, 235, 0.18);
+  border-color: #93c5fd;
+}
+
+.pdf-hover-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(30, 58, 138, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 10;
+  backdrop-filter: blur(1px);
+}
+
+.pdf-preview-wrapper:hover .pdf-hover-overlay {
+  opacity: 1;
+}
+
+.pdf-hover-badge {
+  background: #1e3a8a;
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pdf-preview-doc {
+  font-size: 0.825rem;
+}
+
+.pdf-mini-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+}
+
+.pdf-mini-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mini-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+}
+
+.mini-title {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--primary);
+}
+
+.mini-meta {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.mini-status-badge {
+  background: #eff6ff;
+  color: var(--primary);
+  border: 1px solid #bfdbfe;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 0.725rem;
+}
+
+.pdf-mini-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  background: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 0.775rem;
+  margin-bottom: 12px;
+}
+
+@media (max-width: 640px) {
+  .pdf-mini-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.pdf-mini-stats span {
+  color: var(--text-muted);
+}
+
+.pdf-mini-table {
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.pdf-mini-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 0.8rem;
+}
+
+.pdf-mini-row:last-child {
+  border-bottom: none;
+}
+
+.pdf-mini-row.header {
+  background: #f1f5f9;
+  font-weight: 700;
+  color: #475569;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+/* WhatsApp Accordion Details */
+.whatsapp-details {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 12px;
+}
+
+.whatsapp-summary {
+  padding: 10px 14px;
+  background: #f8fafc;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: #334155;
+  outline: none;
+  user-select: none;
+}
+
+.whatsapp-summary:hover {
+  background: #f1f5f9;
+}
+
 .report-preview {
   background: #0f172a;
   color: #e2e8f0;
   padding: 16px;
-  border-radius: 8px;
   font-family: var(--font-mono);
   font-size: 0.825rem;
   white-space: pre-wrap;
   word-break: break-word;
   line-height: 1.6;
-  max-height: 360px;
+  max-height: 300px;
   overflow-y: auto;
+  border-top: 1px solid var(--border-color);
 }
 
 /* Modal / Wizard */

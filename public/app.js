@@ -54,6 +54,16 @@ const elBtnAddRoom = document.getElementById("btnAddRoom");
 const elBtnLoadSample = document.getElementById("btnLoadSample");
 const elBtnRollForward = document.getElementById("btnRollForward");
 const elBtnCopyReport = document.getElementById("btnCopyReport");
+const elBtnOpenPdf = document.getElementById("btnOpenPdf");
+const elPdfPreviewWrapper = document.getElementById("pdfPreviewWrapper");
+
+// Miniature PDF Preview Elements
+const elMiniDocPeriod = document.getElementById("miniDocPeriod");
+const elMiniDocRate = document.getElementById("miniDocRate");
+const elMiniDocGrid = document.getElementById("miniDocGrid");
+const elMiniDocWater = document.getElementById("miniDocWater");
+const elMiniDocBalance = document.getElementById("miniDocBalance");
+const elMiniTenantRows = document.getElementById("miniTenantRows");
 
 // Display Elements
 const elDispUnitRate = document.getElementById("dispUnitRate");
@@ -160,6 +170,20 @@ function attachEventListeners() {
   elBtnCopyReport.addEventListener("click", () => {
     copyReportToClipboard();
   });
+
+  if (elBtnOpenPdf) {
+    elBtnOpenPdf.addEventListener("click", () => {
+      saveInputState();
+      window.open("invoice.html", "_blank");
+    });
+  }
+
+  if (elPdfPreviewWrapper) {
+    elPdfPreviewWrapper.addEventListener("click", () => {
+      saveInputState();
+      window.open("invoice.html", "_blank");
+    });
+  }
 
   // Wizard Modal
   elBtnOpenWizard.addEventListener("click", openWizard);
@@ -493,6 +517,27 @@ function recalculate() {
   elDispCollected.textContent = `RM ${totalCollected.toFixed(2)}`;
   elDispActual.textContent = `RM ${actualPayable.toFixed(2)}`;
   elDispBalance.textContent = `RM ${nextMonthBalance.toFixed(2)}`;
+
+  // Update Live Miniature PDF Preview
+  if (elMiniDocPeriod) elMiniDocPeriod.textContent = electricFormattedDate;
+  if (elMiniDocRate) elMiniDocRate.textContent = `RM ${unitRate.toFixed(2)}/kWh`;
+  if (elMiniDocGrid) elMiniDocGrid.textContent = `${totalKwh.toFixed(0)} kWh`;
+  if (elMiniDocWater) elMiniDocWater.textContent = `RM ${round2(waterCostPerPerson).toFixed(2)}/pax`;
+  if (elMiniDocBalance) elMiniDocBalance.textContent = `RM ${nextMonthBalance.toFixed(2)}`;
+
+  if (elMiniTenantRows) {
+    elMiniTenantRows.innerHTML = "";
+    tenantRows.forEach(t => {
+      const row = document.createElement("div");
+      row.className = "pdf-mini-row";
+      row.innerHTML = `
+        <span><strong>${escapeHtml(t.tenant)}</strong></span>
+        <span style="color:#64748b;">${escapeHtml(t.room)}</span>
+        <span class="text-right"><strong>RM ${round2(t.total).toFixed(2)}</strong></span>
+      `;
+      elMiniTenantRows.appendChild(row);
+    });
+  }
 
   // 5. Generate Formatted WhatsApp Text
   const electricFormattedDate = formatElectricDate(elElectricDate ? elElectricDate.value : "");
