@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>House Utility Bill Calculator | Electricity & Water</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">⚡💧</div>
+        <div>
+          <h1>House Utility Bill Calculator</h1>
+          <p class="subtitle">Interactive Electricity & Water Bill Splitter with Sub-Meter & Balance Carryover</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="btnOpenWizard" class="btn btn-primary" title="Launch step-by-step interactive prompt wizard">
+          <span class="icon">🧙</span> Interactive Prompt Wizard
+        </button>
+        <button id="btnLoadSample" class="btn btn-secondary" title="Load the sample data matching the reference calculation">
+          <span class="icon">🔄</span> Load Reference Sample
+        </button>
+        <button id="btnRollForward" class="btn btn-secondary" title="Use current ending balance & readings for next month">
+          <span class="icon">⏭️</span> Roll Forward to Next Month
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Grid Layout -->
+    <main class="calculator-grid">
+      <!-- Left Column: Inputs -->
+      <section class="input-panel">
+        <!-- 1. Utility Invoices Card -->
+        <div class="card">
+          <div class="card-header">
+            <h2><span class="step-badge">1</span> Utility Bill Summary</h2>
+          </div>
+          <div class="card-body">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="electricPeriod">Electric Bill Period / Due Date</label>
+                <input type="text" id="electricPeriod" class="form-control" value="By 12 August 2026" placeholder="e.g. By 12 August 2026" />
+              </div>
+              <div class="form-group">
+                <label for="waterPeriod">Water Bill Period</label>
+                <input type="text" id="waterPeriod" class="form-control" value="May to July 2026" placeholder="e.g. May to July 2026" />
+              </div>
+            </div>
+
+            <div class="form-row form-row-3">
+              <div class="form-group">
+                <label for="electricAmount">Electric Bill (RM)</label>
+                <div class="input-prefix-wrapper">
+                  <span class="prefix">RM</span>
+                  <input type="number" step="0.01" id="electricAmount" class="form-control" value="157.15" required />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="prevBalance">Prev. Balance Deduction (RM)</label>
+                <div class="input-prefix-wrapper">
+                  <span class="prefix">RM</span>
+                  <input type="number" step="0.01" id="prevBalance" class="form-control" value="2.42" />
+                </div>
+                <small class="helper-text">Carried over surplus from last month</small>
+              </div>
+              <div class="form-group">
+                <label for="totalKwh">Total Grid Usage (kWh)</label>
+                <div class="input-suffix-wrapper">
+                  <input type="number" step="0.1" id="totalKwh" class="form-control" value="477" required />
+                  <span class="suffix">kWh</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row form-row-2">
+              <div class="form-group">
+                <label for="waterAmount">Total Water Bill (RM)</label>
+                <div class="input-prefix-wrapper">
+                  <span class="prefix">RM</span>
+                  <input type="number" step="0.01" id="waterAmount" class="form-control" value="7.00" required />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="rateMode">Rate Calculation Strategy</label>
+                <select id="rateMode" class="form-control select-control">
+                  <option value="ceil" selected>Ceil / Round Up (RM 0.33) - Standard House Rule</option>
+                  <option value="round">Round (2 Decimals)</option>
+                  <option value="exact">Exact Floating Rate</option>
+                  <option value="manual">Manual Fixed Rate (RM / kWh)</option>
+                </select>
+              </div>
+            </div>
+
+            <div id="manualRateGroup" class="form-group hidden">
+              <label for="manualRate">Custom Electric Rate (RM per kWh)</label>
+              <input type="number" step="0.0001" id="manualRate" class="form-control" placeholder="0.33" />
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Rooms & Sub-meters Card -->
+        <div class="card">
+          <div class="card-header space-between">
+            <h2><span class="step-badge">2</span> Rooms, AC Sub-Meters & Tenant Names</h2>
+            <button type="button" id="btnAddRoom" class="btn btn-sm btn-outline">
+              <span class="icon">+</span> Add Room
+            </button>
+          </div>
+          <div class="card-body">
+            <div id="roomsContainer" class="rooms-container">
+              <!-- Dynamically rendered room cards with individual tenant names -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Live Results & Formatted Output -->
+      <section class="results-panel">
+        <!-- Metric Summary Pills -->
+        <div class="metric-ribbon">
+          <div class="metric-card">
+            <span class="metric-label">Effective Rate</span>
+            <span class="metric-value" id="dispUnitRate">RM 0.33<span class="unit">/kWh</span></span>
+            <span class="metric-sub" id="dispNetElectric">Net: RM 154.73</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Common Electric</span>
+            <span class="metric-value" id="dispCommonPerPerson">RM 18.15</span>
+            <span class="metric-sub" id="dispCommonKwh">220 kWh / 4 pax</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Water Per Person</span>
+            <span class="metric-value" id="dispWaterPerPerson">RM 1.75</span>
+            <span class="metric-sub" id="dispTotalTenants">4 Total Tenants</span>
+          </div>
+        </div>
+
+        <!-- Tenant Breakdown Table -->
+        <div class="card">
+          <div class="card-header">
+            <h2><span class="step-badge">3</span> Individual Tenant Breakdown</h2>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="tenant-table">
+                <thead>
+                  <tr>
+                    <th>Tenant Name</th>
+                    <th>Room</th>
+                    <th>Common Elec</th>
+                    <th>Room AC</th>
+                    <th>Water</th>
+                    <th class="text-right">Total Payable</th>
+                  </tr>
+                </thead>
+                <tbody id="tenantTableBody">
+                  <!-- Dynamically rendered rows -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Financial Reconciliation Box -->
+            <div class="reconciliation-box">
+              <div class="recon-row">
+                <span>Total Collected from Tenants:</span>
+                <strong id="dispCollected">RM 164.41</strong>
+              </div>
+              <div class="recon-row">
+                <span>Actual Incurred (Electric + Water):</span>
+                <span id="dispActual">RM 164.15</span>
+              </div>
+              <div class="recon-divider"></div>
+              <div class="recon-row highlight">
+                <span>Next Month Carryover Balance:</span>
+                <strong class="balance-badge" id="dispBalance">RM 0.26</strong>
+              </div>
+              <p class="balance-note">💡 This balance will automatically be deducted from next month's electric bill before calculating the unit rate.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Copyable Report Card -->
+        <div class="card">
+          <div class="card-header space-between">
+            <h2><span class="step-badge">4</span> WhatsApp / Chat Formatted Report</h2>
+            <button id="btnCopyReport" class="btn btn-primary">
+              <span class="icon">📋</span> Copy Message
+            </button>
+          </div>
+          <div class="card-body">
+            <pre id="reportPreview" class="report-preview"></pre>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Interactive Step-by-Step Prompt Modal Wizard -->
+    <div id="wizardModal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="wizardTitle">Interactive Prompt Wizard</h3>
+          <button id="btnCloseWizard" class="btn-close-modal">✕</button>
+        </div>
+        <div class="modal-body" id="wizardBody">
+          <!-- Wizard steps dynamically injected here -->
+        </div>
+        <div class="modal-footer">
+          <button id="btnWizardPrev" class="btn btn-secondary hidden">Back</button>
+          <button id="btnWizardNext" class="btn btn-primary">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">Copied to clipboard!</div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
