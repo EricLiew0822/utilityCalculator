@@ -405,12 +405,12 @@
       <table class="room-table">
         <thead>
           <tr>
-            <th>Room</th>
-            <th>Previous Meter</th>
-            <th>Current Meter</th>
-            <th>Usage (kWh)</th>
-            <th>Total AC Cost</th>
-            <th class="text-right">Per Tenant Share</th>
+            <th style="width: 22%;">Room</th>
+            <th class="text-right" style="width: 15%;">Previous Meter</th>
+            <th class="text-right" style="width: 15%;">Current Meter</th>
+            <th class="text-right" style="width: 16%;">Usage (kWh)</th>
+            <th class="text-right" style="width: 16%;">Total AC Cost</th>
+            <th class="text-right" style="width: 16%;">Per Tenant Share</th>
           </tr>
         </thead>
         <tbody id="docRoomTableBody">
@@ -419,18 +419,18 @@
       </table>
     </div>
 
-    <!-- 3. Tenant Payment Breakdown -->
+    <!-- 3. Individual Tenant Payable Breakdown -->
     <div class="section-title">3. Individual Tenant Payable Breakdown</div>
     <div class="table-section">
       <table>
         <thead>
           <tr>
-            <th>Tenant Name</th>
-            <th>Room</th>
-            <th>Common Elec</th>
-            <th>Room AC</th>
-            <th>Water</th>
-            <th class="text-right">Total Payable</th>
+            <th style="width: 22%;">Tenant Name</th>
+            <th style="width: 16%;">Room</th>
+            <th class="text-right" style="width: 15%;">Common Elec</th>
+            <th class="text-right" style="width: 15%;">Room AC</th>
+            <th class="text-right" style="width: 14%;">Water</th>
+            <th class="text-right" style="width: 18%;">Total Payable</th>
           </tr>
         </thead>
         <tbody id="docTenantTableBody">
@@ -577,10 +577,10 @@
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td><strong>${escapeHtml(r.name)}</strong></td>
-          <td>${r.prevMeter}</td>
-          <td>${r.currMeter}</td>
-          <td>${r.kwh.toFixed(0)} kWh</td>
-          <td>RM ${r.roomCost.toFixed(2)}</td>
+          <td class="text-right">${r.prevMeter}</td>
+          <td class="text-right">${r.currMeter}</td>
+          <td class="text-right">${r.kwh.toFixed(0)} kWh</td>
+          <td class="text-right">RM ${r.roomCost.toFixed(2)}</td>
           <td class="text-right"><strong>RM ${r.perTenantAc.toFixed(2)}</strong></td>
         `;
         roomTbody.appendChild(tr);
@@ -594,9 +594,9 @@
         tr.innerHTML = `
           <td><span class="tenant-badge">${escapeHtml(t.tenant)}</span></td>
           <td>${escapeHtml(t.room)}</td>
-          <td>RM ${round2(t.common).toFixed(2)}</td>
-          <td>RM ${round2(t.roomAc).toFixed(2)}</td>
-          <td>RM ${round2(t.water).toFixed(2)}</td>
+          <td class="text-right">RM ${round2(t.common).toFixed(2)}</td>
+          <td class="text-right">RM ${round2(t.roomAc).toFixed(2)}</td>
+          <td class="text-right">RM ${round2(t.water).toFixed(2)}</td>
           <td class="text-right"><span class="amount-badge">RM ${round2(t.total).toFixed(2)}</span></td>
         `;
         tenantTbody.appendChild(tr);
