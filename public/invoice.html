@@ -155,7 +155,7 @@
 
     .grid-2 {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 44% 56%;
       gap: 16px;
       margin-bottom: 24px;
     }
@@ -170,7 +170,7 @@
     .info-row {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
       gap: 8px;
       font-size: 0.85rem;
       margin-bottom: 6px;
@@ -180,9 +180,13 @@
       margin-bottom: 0;
     }
 
+    .info-row span:first-child {
+      white-space: nowrap;
+    }
+
     #docCommonKwh {
       text-align: left !important;
-      display: inline-block;
+      white-space: nowrap;
     }
 
     .info-row.highlight {
