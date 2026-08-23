@@ -48,14 +48,14 @@
             <div class="form-row">
               <div class="form-group">
                 <label for="electricDate">Electric Bill Due Date</label>
-                <input type="date" id="electricDate" class="form-control" value="2026-08-12" />
+                <input type="date" id="electricDate" class="form-control" />
               </div>
               <div class="form-group">
                 <label>Water Bill Period</label>
                 <div class="date-range-wrapper">
-                  <input type="date" id="waterStartDate" class="form-control" value="2026-05-01" />
+                  <input type="date" id="waterStartDate" class="form-control" />
                   <span class="range-sep">to</span>
-                  <input type="date" id="waterEndDate" class="form-control" value="2026-07-31" />
+                  <input type="date" id="waterEndDate" class="form-control" />
                 </div>
               </div>
             </div>
@@ -65,21 +65,21 @@
                 <label for="electricAmount">Electric Bill</label>
                 <div class="input-prefix-wrapper">
                   <span class="prefix">RM</span>
-                  <input type="number" step="0.01" id="electricAmount" class="form-control" value="157.15" required />
+                  <input type="number" step="0.01" id="electricAmount" class="form-control" placeholder="157.15" />
                 </div>
               </div>
               <div class="form-group">
                 <label for="prevBalance">Prev. Balance Deduction</label>
                 <div class="input-prefix-wrapper">
                   <span class="prefix">RM</span>
-                  <input type="number" step="0.01" id="prevBalance" class="form-control" value="2.42" />
+                  <input type="number" step="0.01" id="prevBalance" class="form-control" placeholder="2.42" />
                 </div>
                 <small class="helper-text">Carried over surplus from last month</small>
               </div>
               <div class="form-group">
                 <label for="totalKwh">Total Grid Usage</label>
                 <div class="input-suffix-wrapper">
-                  <input type="number" step="0.1" id="totalKwh" class="form-control" value="477" required />
+                  <input type="number" step="0.1" id="totalKwh" class="form-control" placeholder="477" />
                   <span class="suffix">kWh</span>
                 </div>
               </div>
@@ -90,7 +90,7 @@
                 <label for="waterAmount">Total Water Bill</label>
                 <div class="input-prefix-wrapper">
                   <span class="prefix">RM</span>
-                  <input type="number" step="0.01" id="waterAmount" class="form-control" value="7.00" required />
+                  <input type="number" step="0.01" id="waterAmount" class="form-control" placeholder="7.00" />
                 </div>
               </div>
               <div class="form-group">

@@ -2,8 +2,24 @@
  * Integrated Electricity and Water Bill Calculator - Frontend Engine
  */
 
-// Initial Reference Dataset matching the provided invoice sheet
+// Clean blank initial state with zero prefilled values
 const DEFAULT_STATE = {
+  electricDate: "",
+  waterStartDate: "",
+  waterEndDate: "",
+  electricAmount: "",
+  prevBalance: "",
+  totalKwh: "",
+  waterAmount: "",
+  rateMode: "ceil",
+  manualRate: "",
+  rooms: [
+    { id: "room_1", name: "", prevMeter: "", currMeter: "", tenants: [""] }
+  ]
+};
+
+// Preset reference dataset accessible via the "Load Reference Sample" button
+const SAMPLE_REFERENCE_STATE = {
   electricDate: "2026-08-12",
   waterStartDate: "2026-05-01",
   waterEndDate: "2026-07-31",
@@ -75,16 +91,16 @@ function init() {
 }
 
 function bindFormInputs() {
-  if (elElectricDate) elElectricDate.value = appState.electricDate || "2026-08-12";
-  if (elWaterStartDate) elWaterStartDate.value = appState.waterStartDate || "2026-05-01";
-  if (elWaterEndDate) elWaterEndDate.value = appState.waterEndDate || "2026-07-31";
+  if (elElectricDate) elElectricDate.value = appState.electricDate || "";
+  if (elWaterStartDate) elWaterStartDate.value = appState.waterStartDate || "";
+  if (elWaterEndDate) elWaterEndDate.value = appState.waterEndDate || "";
   
-  elElectricAmount.value = appState.electricAmount;
-  elPrevBalance.value = appState.prevBalance;
-  elTotalKwh.value = appState.totalKwh;
-  elWaterAmount.value = appState.waterAmount;
+  elElectricAmount.value = (appState.electricAmount !== null && appState.electricAmount !== undefined) ? appState.electricAmount : "";
+  elPrevBalance.value = (appState.prevBalance !== null && appState.prevBalance !== undefined) ? appState.prevBalance : "";
+  elTotalKwh.value = (appState.totalKwh !== null && appState.totalKwh !== undefined) ? appState.totalKwh : "";
+  elWaterAmount.value = (appState.waterAmount !== null && appState.waterAmount !== undefined) ? appState.waterAmount : "";
   elRateMode.value = appState.rateMode || "ceil";
-  if (appState.manualRate) elManualRate.value = appState.manualRate;
+  elManualRate.value = (appState.manualRate !== null && appState.manualRate !== undefined) ? appState.manualRate : "";
 
   toggleManualRate();
 }
@@ -118,10 +134,10 @@ function attachEventListeners() {
     const newId = "room_" + Date.now();
     appState.rooms.push({
       id: newId,
-      name: `Room ${appState.rooms.length + 1}`,
-      prevMeter: 0,
-      currMeter: 0,
-      tenants: ["Tenant 1"]
+      name: "",
+      prevMeter: "",
+      currMeter: "",
+      tenants: [""]
     });
     renderRooms();
     saveInputState();
@@ -129,7 +145,7 @@ function attachEventListeners() {
   });
 
   elBtnLoadSample.addEventListener("click", () => {
-    appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
+    appState = JSON.parse(JSON.stringify(SAMPLE_REFERENCE_STATE));
     bindFormInputs();
     renderRooms();
     saveInputState();
@@ -161,22 +177,22 @@ function toggleManualRate() {
 }
 
 function saveInputState() {
-  appState.electricDate = elElectricDate ? elElectricDate.value : "2026-08-12";
-  appState.waterStartDate = elWaterStartDate ? elWaterStartDate.value : "2026-05-01";
-  appState.waterEndDate = elWaterEndDate ? elWaterEndDate.value : "2026-07-31";
-  appState.electricAmount = parseFloat(elElectricAmount.value) || 0;
-  appState.prevBalance = parseFloat(elPrevBalance.value) || 0;
-  appState.totalKwh = parseFloat(elTotalKwh.value) || 0;
-  appState.waterAmount = parseFloat(elWaterAmount.value) || 0;
+  appState.electricDate = elElectricDate ? elElectricDate.value : "";
+  appState.waterStartDate = elWaterStartDate ? elWaterStartDate.value : "";
+  appState.waterEndDate = elWaterEndDate ? elWaterEndDate.value : "";
+  appState.electricAmount = elElectricAmount.value !== "" ? parseFloat(elElectricAmount.value) : "";
+  appState.prevBalance = elPrevBalance.value !== "" ? parseFloat(elPrevBalance.value) : "";
+  appState.totalKwh = elTotalKwh.value !== "" ? parseFloat(elTotalKwh.value) : "";
+  appState.waterAmount = elWaterAmount.value !== "" ? parseFloat(elWaterAmount.value) : "";
   appState.rateMode = elRateMode.value;
-  appState.manualRate = parseFloat(elManualRate.value) || 0.33;
+  appState.manualRate = elManualRate.value !== "" ? parseFloat(elManualRate.value) : "";
 
-  localStorage.setItem("bill_calc_state_v2", JSON.stringify(appState));
+  localStorage.setItem("bill_calc_state_v4", JSON.stringify(appState));
 }
 
 function loadSavedState() {
   try {
-    const saved = localStorage.getItem("bill_calc_state_v2");
+    const saved = localStorage.getItem("bill_calc_state_v4");
     if (!saved) return null;
     const parsed = JSON.parse(saved);
     if (parsed.rooms) {
@@ -194,7 +210,7 @@ function loadSavedState() {
 
 // --- Date Formatting Helpers ---
 function formatElectricDate(dateStr) {
-  if (!dateStr) return "By 12 August 2026";
+  if (!dateStr) return "Current Period";
   try {
     const parts = dateStr.split("-");
     if (parts.length !== 3) return dateStr;
@@ -209,7 +225,7 @@ function formatElectricDate(dateStr) {
 }
 
 function formatWaterPeriod(startStr, endStr) {
-  if (!startStr && !endStr) return "May to July 2026";
+  if (!startStr && !endStr) return "Current Period";
   try {
     if (startStr && !endStr) {
       const [y, m, d] = startStr.split("-").map(Number);
@@ -242,37 +258,51 @@ function formatWaterPeriod(startStr, endStr) {
 function renderRooms() {
   elRoomsContainer.innerHTML = "";
 
+  if (!appState.rooms || appState.rooms.length === 0) {
+    appState.rooms = [{ id: "room_1", name: "", prevMeter: "", currMeter: "", tenants: [""] }];
+  }
+
+  const sampleNames = ["Master", "Middle", "Small", "Studio", "Room 5"];
+  const sampleTenantExamples = ["Bryan", "Lim", "Eric", "Honger", "Alex"];
+
   appState.rooms.forEach((room, roomIndex) => {
     const roomEl = document.createElement("div");
     roomEl.className = "room-card";
     roomEl.dataset.id = room.id;
 
-    const kwhUsed = Math.max(0, (parseFloat(room.currMeter) || 0) - (parseFloat(room.prevMeter) || 0));
+    const prevVal = (room.prevMeter !== "" && room.prevMeter !== null && room.prevMeter !== undefined) ? parseFloat(room.prevMeter) : 0;
+    const currVal = (room.currMeter !== "" && room.currMeter !== null && room.currMeter !== undefined) ? parseFloat(room.currMeter) : 0;
+    const kwhUsed = Math.max(0, currVal - prevVal);
 
-    if (!Array.isArray(room.tenants)) {
-      room.tenants = [room.tenants || "Tenant 1"];
+    if (!Array.isArray(room.tenants) || room.tenants.length === 0) {
+      room.tenants = [""];
     }
 
-    let tenantInputsHtml = room.tenants.map((tName, tIndex) => `
-      <div class="tenant-input-row" data-tindex="${tIndex}">
-        <input type="text" class="form-control tenant-name-input" value="${escapeHtml(tName)}" placeholder="Tenant Name (e.g. Bryan)" />
-        ${room.tenants.length > 1 ? `<button type="button" class="btn-danger-icon btn-remove-tenant" title="Remove Tenant">✕</button>` : ''}
-      </div>
-    `).join("");
+    let tenantInputsHtml = room.tenants.map((tName, tIndex) => {
+      const placeholderTenant = sampleTenantExamples[tIndex % sampleTenantExamples.length] || `Tenant ${tIndex + 1}`;
+      return `
+        <div class="tenant-input-row" data-tindex="${tIndex}">
+          <input type="text" class="form-control tenant-name-input" value="${escapeHtml(tName || '')}" placeholder="e.g. ${placeholderTenant}" />
+          ${room.tenants.length > 1 ? `<button type="button" class="btn-danger-icon btn-remove-tenant" title="Remove Tenant">✕</button>` : ''}
+        </div>
+      `;
+    }).join("");
+
+    const placeholderRoomName = sampleNames[roomIndex % sampleNames.length] || `Room ${roomIndex + 1}`;
 
     roomEl.innerHTML = `
       <div class="room-card-header">
-        <input type="text" class="room-name-input" value="${escapeHtml(room.name)}" placeholder="Room Name (e.g. Master, Middle, Small)" data-field="name" />
+        <input type="text" class="room-name-input" value="${escapeHtml(room.name || '')}" placeholder="e.g. ${placeholderRoomName}" data-field="name" />
         ${appState.rooms.length > 1 ? `<button type="button" class="btn-danger-icon btn-remove-room" title="Remove Room">✕</button>` : ''}
       </div>
       <div class="room-meter-grid">
         <div class="form-group">
           <label>Prev Meter Reading</label>
-          <input type="number" step="1" class="form-control room-meter-input" value="${room.prevMeter}" data-field="prevMeter" />
+          <input type="number" step="1" class="form-control room-meter-input" value="${(room.prevMeter !== '' && room.prevMeter !== null && room.prevMeter !== undefined) ? room.prevMeter : ''}" placeholder="5574" data-field="prevMeter" />
         </div>
         <div class="form-group">
           <label>Curr Meter Reading</label>
-          <input type="number" step="1" class="form-control room-meter-input" value="${room.currMeter}" data-field="currMeter" />
+          <input type="number" step="1" class="form-control room-meter-input" value="${(room.currMeter !== '' && room.currMeter !== null && room.currMeter !== undefined) ? room.currMeter : ''}" placeholder="5774" data-field="currMeter" />
         </div>
         <div class="form-group">
           <label>Room AC kWh</label>
@@ -297,9 +327,11 @@ function renderRooms() {
         const field = e.target.dataset.field;
         const val = e.target.value;
         if (field === "prevMeter" || field === "currMeter") {
-          room[field] = parseFloat(val) || 0;
+          room[field] = val !== "" ? parseFloat(val) : "";
           const kwhBadge = roomEl.querySelector(".room-kwh-badge");
-          const updatedKwh = Math.max(0, room.currMeter - room.prevMeter);
+          const p = parseFloat(room.prevMeter) || 0;
+          const c = parseFloat(room.currMeter) || 0;
+          const updatedKwh = Math.max(0, c - p);
           if (kwhBadge) kwhBadge.textContent = `${updatedKwh.toFixed(0)} kWh`;
         } else {
           room[field] = val;
@@ -323,7 +355,7 @@ function renderRooms() {
     // Add Tenant button
     const addTenantBtn = roomEl.querySelector(".btn-add-tenant");
     addTenantBtn.addEventListener("click", () => {
-      room.tenants.push(`Tenant ${room.tenants.length + 1}`);
+      room.tenants.push("");
       renderRooms();
       saveInputState();
       recalculate();
@@ -365,18 +397,15 @@ function recalculate() {
   const manualRate = parseFloat(elManualRate.value) || 0;
 
   // 1. Effective Unit Rate
-  const netElectric = electricAmount - prevBalance;
+  const netElectric = Math.max(0, electricAmount - prevBalance);
   const rawRate = totalKwh > 0 ? netElectric / totalKwh : 0;
   
   let unitRate = 0;
   if (rateMode === "manual") {
     unitRate = manualRate;
-  } else if (rateMode === "ceil") {
-    unitRate = Math.ceil(rawRate * 100) / 100;
-  } else if (rateMode === "round") {
-    unitRate = Math.round(rawRate * 100) / 100;
   } else {
-    unitRate = rawRate;
+    // ceil
+    unitRate = Math.ceil(rawRate * 100) / 100;
   }
 
   // 2. Parse Tenants and Room Usages
@@ -384,28 +413,33 @@ function recalculate() {
   let totalRoomKwh = 0;
   const roomCalculations = [];
 
-  appState.rooms.forEach(r => {
-    const prev = parseFloat(r.prevMeter) || 0;
-    const curr = parseFloat(r.currMeter) || 0;
+  (appState.rooms || []).forEach((r, idx) => {
+    const prev = (r.prevMeter !== "" && r.prevMeter !== null && r.prevMeter !== undefined) ? parseFloat(r.prevMeter) : 0;
+    const curr = (r.currMeter !== "" && r.currMeter !== null && r.currMeter !== undefined) ? parseFloat(r.currMeter) : 0;
     const kwh = Math.max(0, curr - prev);
     totalRoomKwh += kwh;
+
+    const roomName = (r.name && r.name.trim()) ? r.name.trim() : `Room ${idx + 1}`;
 
     const tenantList = (Array.isArray(r.tenants) ? r.tenants : [r.tenants])
       .map(t => (typeof t === "string" ? t.trim() : ""))
       .filter(Boolean);
 
-    totalHeadcount += tenantList.length;
+    // If no tenant names typed yet, treat as 1 unnamed tenant for preview
+    const effectiveTenants = tenantList.length > 0 ? tenantList : [`Tenant ${totalHeadcount + 1}`];
+
+    totalHeadcount += effectiveTenants.length;
     const roomCost = kwh * unitRate;
-    const perTenantAc = tenantList.length > 0 ? (roomCost / tenantList.length) : 0;
+    const perTenantAc = effectiveTenants.length > 0 ? (roomCost / effectiveTenants.length) : 0;
 
     roomCalculations.push({
-      name: r.name,
+      name: roomName,
       prevMeter: prev,
       currMeter: curr,
       kwh: kwh,
       roomCost: roomCost,
       perTenantAc: perTenantAc,
-      tenants: tenantList
+      tenants: effectiveTenants
     });
   });
 
@@ -431,7 +465,7 @@ function recalculate() {
 
   const totalCollected = tenantRows.reduce((sum, t) => sum + round2(t.total), 0);
   const actualPayable = electricAmount + waterAmount;
-  const nextMonthBalance = totalCollected - actualPayable;
+  const nextMonthBalance = Math.max(0, totalCollected - actualPayable);
 
   // 4. Update UI Displays
   elDispUnitRate.innerHTML = `RM ${unitRate.toFixed(2)}<span class="unit">/kWh</span>`;
@@ -461,10 +495,10 @@ function recalculate() {
   elDispBalance.textContent = `RM ${nextMonthBalance.toFixed(2)}`;
 
   // 5. Generate Formatted WhatsApp Text
-  const electricFormattedDate = formatElectricDate(elElectricDate ? elElectricDate.value : appState.electricDate);
+  const electricFormattedDate = formatElectricDate(elElectricDate ? elElectricDate.value : "");
   const waterFormattedPeriod = formatWaterPeriod(
-    elWaterStartDate ? elWaterStartDate.value : appState.waterStartDate,
-    elWaterEndDate ? elWaterEndDate.value : appState.waterEndDate
+    elWaterStartDate ? elWaterStartDate.value : "",
+    elWaterEndDate ? elWaterEndDate.value : ""
   );
 
   generateFormattedReport({
@@ -532,6 +566,7 @@ function rollForwardNextMonth() {
 
     appState.rooms.forEach(r => {
       r.prevMeter = r.currMeter;
+      r.currMeter = "";
     });
 
     renderRooms();
@@ -581,62 +616,74 @@ function renderWizardStep() {
       <div class="wizard-step-title">⚡ Step 1: Utility Invoices & Consumption</div>
       <div class="form-group" style="margin-bottom:12px;">
         <label>Electric Bill Due Date</label>
-        <input type="date" id="wizElecDate" class="form-control" value="${wizardTempState.electricDate || '2026-08-12'}" />
+        <input type="date" id="wizElecDate" class="form-control" value="${wizardTempState.electricDate || ''}" />
       </div>
       <div class="form-group" style="margin-bottom:12px;">
         <label>Total Electric Bill Amount</label>
-        <input type="number" step="0.01" id="wizElecAmount" class="form-control" value="${wizardTempState.electricAmount}" />
+        <input type="number" step="0.01" id="wizElecAmount" class="form-control" value="${wizardTempState.electricAmount || ''}" placeholder="157.15" />
       </div>
       <div class="form-group" style="margin-bottom:12px;">
         <label>Previous Month Balance Carryover</label>
-        <input type="number" step="0.01" id="wizPrevBalance" class="form-control" value="${wizardTempState.prevBalance}" />
+        <input type="number" step="0.01" id="wizPrevBalance" class="form-control" value="${wizardTempState.prevBalance || ''}" placeholder="2.42" />
         <small class="helper-text">Deducted before calculating electricity rate</small>
       </div>
       <div class="form-group" style="margin-bottom:12px;">
         <label>Total Grid Electricity Usage</label>
-        <input type="number" step="0.1" id="wizTotalKwh" class="form-control" value="${wizardTempState.totalKwh}" />
+        <input type="number" step="0.1" id="wizTotalKwh" class="form-control" value="${wizardTempState.totalKwh || ''}" placeholder="477" />
       </div>
       <div class="form-group" style="margin-bottom:12px;">
         <label>Water Bill Period</label>
         <div class="date-range-wrapper">
-          <input type="date" id="wizWaterStartDate" class="form-control" value="${wizardTempState.waterStartDate || '2026-05-01'}" />
+          <input type="date" id="wizWaterStartDate" class="form-control" value="${wizardTempState.waterStartDate || ''}" />
           <span class="range-sep">to</span>
-          <input type="date" id="wizWaterEndDate" class="form-control" value="${wizardTempState.waterEndDate || '2026-07-31'}" />
+          <input type="date" id="wizWaterEndDate" class="form-control" value="${wizardTempState.waterEndDate || ''}" />
         </div>
       </div>
       <div class="form-group" style="margin-bottom:12px;">
         <label>Total Water Bill Amount</label>
-        <input type="number" step="0.01" id="wizWaterAmount" class="form-control" value="${wizardTempState.waterAmount}" />
+        <input type="number" step="0.01" id="wizWaterAmount" class="form-control" value="${wizardTempState.waterAmount || ''}" placeholder="7.00" />
       </div>
     `;
   } else if (currentWizardStep === 2) {
+    if (!wizardTempState.rooms || wizardTempState.rooms.length === 0) {
+      wizardTempState.rooms = [{ id: "room_1", name: "", prevMeter: "", currMeter: "", tenants: [""] }];
+    }
+
+    const sampleRoomExamples = ["Master", "Middle", "Small", "Studio"];
+    const sampleTenantExamples = ["Bryan", "Lim", "Eric", "Honger"];
+
     let roomsHtml = wizardTempState.rooms.map((r, rIdx) => {
-      let tHtml = r.tenants.map((t, tIdx) => `
-        <div class="tenant-input-row" style="margin-bottom:6px;">
-          <input type="text" class="form-control wiz-tenant-name" data-ridx="${rIdx}" data-tidx="${tIdx}" value="${escapeHtml(t)}" placeholder="Tenant ${tIdx+1} Name" />
-          ${r.tenants.length > 1 ? `<button type="button" class="btn-danger-icon wiz-btn-remove-tenant" data-ridx="${rIdx}" data-tidx="${tIdx}">✕</button>` : ''}
-        </div>
-      `).join("");
+      const pRoom = sampleRoomExamples[rIdx % sampleRoomExamples.length] || `Room ${rIdx + 1}`;
+      
+      let tHtml = r.tenants.map((t, tIdx) => {
+        const pTenant = sampleTenantExamples[tIdx % sampleTenantExamples.length] || `Tenant ${tIdx + 1}`;
+        return `
+          <div class="tenant-input-row" style="margin-bottom:6px;">
+            <input type="text" class="form-control wiz-tenant-name" data-ridx="${rIdx}" data-tidx="${tIdx}" value="${escapeHtml(t || '')}" placeholder="e.g. ${pTenant}" />
+            ${r.tenants.length > 1 ? `<button type="button" class="btn-danger-icon wiz-btn-remove-tenant" data-ridx="${rIdx}" data-tidx="${tIdx}">✕</button>` : ''}
+          </div>
+        `;
+      }).join("");
 
       return `
         <div class="room-card" style="margin-bottom:16px;">
           <div class="room-card-header">
-            <input type="text" class="room-name-input wiz-room-name" data-ridx="${rIdx}" value="${escapeHtml(r.name)}" placeholder="Room Name (e.g. Master, Middle, Small)" />
+            <input type="text" class="room-name-input wiz-room-name" data-ridx="${rIdx}" value="${escapeHtml(r.name || '')}" placeholder="e.g. ${pRoom}" />
             ${wizardTempState.rooms.length > 1 ? `<button type="button" class="btn-danger-icon wiz-btn-remove-room" data-ridx="${rIdx}">✕</button>` : ''}
           </div>
           <div class="form-row">
             <div class="form-group">
               <label>Prev Meter</label>
-              <input type="number" class="form-control wiz-prev-meter" data-ridx="${rIdx}" value="${r.prevMeter}" />
+              <input type="number" class="form-control wiz-prev-meter" data-ridx="${rIdx}" value="${r.prevMeter !== undefined && r.prevMeter !== null ? r.prevMeter : ''}" placeholder="5574" />
             </div>
             <div class="form-group">
               <label>Curr Meter</label>
-              <input type="number" class="form-control wiz-curr-meter" data-ridx="${rIdx}" value="${r.currMeter}" />
+              <input type="number" class="form-control wiz-curr-meter" data-ridx="${rIdx}" value="${r.currMeter !== undefined && r.currMeter !== null ? r.currMeter : ''}" placeholder="5774" />
             </div>
           </div>
           <div style="margin-top:8px;">
             <div class="tenants-list-header">
-              <label>Tenant Names in ${escapeHtml(r.name)}:</label>
+              <label>Tenant Names in ${escapeHtml(r.name || pRoom)}:</label>
               <button type="button" class="btn btn-sm btn-outline wiz-btn-add-tenant" data-ridx="${rIdx}">+ Add Tenant</button>
             </div>
             <div class="tenant-inputs-grid">${tHtml}</div>
@@ -648,7 +695,7 @@ function renderWizardStep() {
     elWizardBody.innerHTML = `
       <div class="wizard-step-title">🏠 Step 2: Rooms, AC Meters & Tenant Names</div>
       <div style="margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
-        <span class="helper-text">Prompting ${wizardTempState.rooms.length} room(s)</span>
+        <span class="helper-text">Configuring ${wizardTempState.rooms.length} room(s)</span>
         <button type="button" id="wizBtnAddRoom" class="btn btn-sm btn-outline">+ Add Room</button>
       </div>
       <div id="wizRoomsContainer">${roomsHtml}</div>
@@ -658,10 +705,10 @@ function renderWizardStep() {
     document.getElementById("wizBtnAddRoom").addEventListener("click", () => {
       wizardTempState.rooms.push({
         id: "room_" + Date.now(),
-        name: `Room ${wizardTempState.rooms.length + 1}`,
-        prevMeter: 0,
-        currMeter: 0,
-        tenants: ["Tenant 1"]
+        name: "",
+        prevMeter: "",
+        currMeter: "",
+        tenants: [""]
       });
       renderWizardStep();
     });
@@ -674,13 +721,13 @@ function renderWizardStep() {
 
     elWizardBody.querySelectorAll(".wiz-prev-meter").forEach(input => {
       input.addEventListener("input", (e) => {
-        wizardTempState.rooms[e.target.dataset.ridx].prevMeter = parseFloat(e.target.value) || 0;
+        wizardTempState.rooms[e.target.dataset.ridx].prevMeter = e.target.value !== "" ? parseFloat(e.target.value) : "";
       });
     });
 
     elWizardBody.querySelectorAll(".wiz-curr-meter").forEach(input => {
       input.addEventListener("input", (e) => {
-        wizardTempState.rooms[e.target.dataset.ridx].currMeter = parseFloat(e.target.value) || 0;
+        wizardTempState.rooms[e.target.dataset.ridx].currMeter = e.target.value !== "" ? parseFloat(e.target.value) : "";
       });
     });
 
@@ -693,7 +740,7 @@ function renderWizardStep() {
     elWizardBody.querySelectorAll(".wiz-btn-add-tenant").forEach(btn => {
       btn.addEventListener("click", (e) => {
         const rIdx = e.target.dataset.ridx;
-        wizardTempState.rooms[rIdx].tenants.push(`Tenant ${wizardTempState.rooms[rIdx].tenants.length + 1}`);
+        wizardTempState.rooms[rIdx].tenants.push("");
         renderWizardStep();
       });
     });
@@ -726,7 +773,7 @@ function renderWizardStep() {
       </div>
       <div id="wizManualRateGroup" class="form-group ${wizardTempState.rateMode === 'manual' ? '' : 'hidden'}">
         <label>Custom Rate</label>
-        <input type="number" step="0.0001" id="wizManualRate" class="form-control" value="${wizardTempState.manualRate || 0.33}" />
+        <input type="number" step="0.0001" id="wizManualRate" class="form-control" value="${wizardTempState.manualRate || ''}" placeholder="0.33" />
       </div>
     `;
 
@@ -737,7 +784,7 @@ function renderWizardStep() {
       wizManualRateGroup.classList.toggle("hidden", wizardTempState.rateMode !== "manual");
     });
     document.getElementById("wizManualRate")?.addEventListener("input", (e) => {
-      wizardTempState.manualRate = parseFloat(e.target.value) || 0.33;
+      wizardTempState.manualRate = e.target.value !== "" ? parseFloat(e.target.value) : "";
     });
   }
 }
@@ -779,12 +826,12 @@ function saveCurrentWizardStepData() {
     const elWA = document.getElementById("wizWaterAmount");
 
     if (elD) wizardTempState.electricDate = elD.value;
-    if (elA) wizardTempState.electricAmount = parseFloat(elA.value) || 0;
-    if (elB) wizardTempState.prevBalance = parseFloat(elB.value) || 0;
-    if (elK) wizardTempState.totalKwh = parseFloat(elK.value) || 0;
+    if (elA) wizardTempState.electricAmount = elA.value !== "" ? parseFloat(elA.value) : "";
+    if (elB) wizardTempState.prevBalance = elB.value !== "" ? parseFloat(elB.value) : "";
+    if (elK) wizardTempState.totalKwh = elK.value !== "" ? parseFloat(elK.value) : "";
     if (elWS) wizardTempState.waterStartDate = elWS.value;
     if (elWE) wizardTempState.waterEndDate = elWE.value;
-    if (elWA) wizardTempState.waterAmount = parseFloat(elWA.value) || 0;
+    if (elWA) wizardTempState.waterAmount = elWA.value !== "" ? parseFloat(elWA.value) : "";
   }
 }
 
