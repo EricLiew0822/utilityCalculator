@@ -612,8 +612,8 @@
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td class="text-left"><strong>${escapeHtml(r.name)}</strong></td>
-          <td class="text-center">${r.prevMeter}</td>
-          <td class="text-center">${r.currMeter}</td>
+          <td class="text-left">${r.prevMeter}</td>
+          <td class="text-left">${r.currMeter}</td>
           <td class="text-left">${r.kwh.toFixed(0)} kWh</td>
           <td class="text-left">RM ${r.roomCost.toFixed(2)}</td>
           <td class="text-left"><strong>RM ${r.perTenantAc.toFixed(2)}</strong></td>
