@@ -157,7 +157,7 @@ function attachEventListeners() {
     renderRooms();
     saveInputState();
     recalculate();
-    showToast("Loaded August 2026 reference sample!");
+    showToast("Loaded sample bill data!");
   });
 
   elBtnRollForward.addEventListener("click", () => {
