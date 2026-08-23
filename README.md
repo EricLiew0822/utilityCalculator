@@ -28,7 +28,7 @@ An integrated utility billing application designed for housemates and shared ren
 ## 🛠️ Tech Stack
 
 - **UI Framework**: [Bootstrap 5.3.3](https://getbootstrap.com/) via CDN & [Bootstrap Icons 1.11.3](https://icons.getbootstrap.com/)
-- **Typography**: [Plus Jakarta Sans](https://fonts.google.com/specimen/Plus+Jakarta+Sans) & [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono)
+- **Typography**: [Inter](https://fonts.google.com/specimen/Inter) & [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono)
 - **Frontend Engine**: Pure Vanilla JavaScript with HTML5 `localStorage` persistence
 - **Backend & CLI**: Python 3 standard library (`dataclasses`, `math`, `unittest`)
 - **Hosting & Serverless**: [Netlify](https://www.netlify.com/) (Continuous Deployment & Python Functions)
