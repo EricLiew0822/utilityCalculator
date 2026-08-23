@@ -321,11 +321,11 @@ function renderRooms() {
       </div>
       <div class="room-meter-grid">
         <div class="form-group">
-          <label>Prev Meter Reading</label>
+          <label>Previous Meter Reading</label>
           <input type="number" step="1" class="form-control room-meter-input" value="${(room.prevMeter !== '' && room.prevMeter !== null && room.prevMeter !== undefined) ? room.prevMeter : ''}" placeholder="5574" data-field="prevMeter" />
         </div>
         <div class="form-group">
-          <label>Curr Meter Reading</label>
+          <label>Current Meter Reading</label>
           <input type="number" step="1" class="form-control room-meter-input" value="${(room.currMeter !== '' && room.currMeter !== null && room.currMeter !== undefined) ? room.currMeter : ''}" placeholder="5774" data-field="currMeter" />
         </div>
         <div class="form-group">
@@ -605,7 +605,7 @@ function generateFormattedReport(data) {
 function rollForwardNextMonth() {
   const currentBalance = parseFloat(elDispBalance.textContent.replace("RM", "").trim()) || 0;
   
-  if (confirm(`Roll forward to next month?\n\n- Previous Balance will be set to RM ${currentBalance.toFixed(2)}\n- Room Prev Meters will be updated to current meter readings\n- Ready for new readings input!`)) {
+  if (confirm(`Roll forward to next month?\n\n- Previous Balance will be set to RM ${currentBalance.toFixed(2)}\n- Room Previous Meters will be updated to current meter readings\n- Ready for new readings input!`)) {
     elPrevBalance.value = currentBalance.toFixed(2);
     appState.prevBalance = currentBalance;
 
@@ -718,11 +718,11 @@ function renderWizardStep() {
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label>Prev Meter</label>
+              <label>Previous Meter</label>
               <input type="number" class="form-control wiz-prev-meter" data-ridx="${rIdx}" value="${r.prevMeter !== undefined && r.prevMeter !== null ? r.prevMeter : ''}" placeholder="5574" />
             </div>
             <div class="form-group">
-              <label>Curr Meter</label>
+              <label>Current Meter</label>
               <input type="number" class="form-control wiz-curr-meter" data-ridx="${rIdx}" value="${r.currMeter !== undefined && r.currMeter !== null ? r.currMeter : ''}" placeholder="5774" />
             </div>
           </div>
