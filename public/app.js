@@ -338,11 +338,11 @@ function renderRooms() {
         <div class="row g-2 align-items-end mb-3">
           <div class="col-sm-4 col-12">
             <label class="form-label extra-small fw-semibold text-secondary mb-1">Previous Meter</label>
-            <input type="number" step="1" class="form-control form-control-sm room-meter-input" value="${(room.prevMeter !== '' && room.prevMeter !== null && room.prevMeter !== undefined) ? room.prevMeter : ''}" placeholder="5574" data-field="prevMeter" />
+            <input type="number" step="1" class="form-control form-control-sm room-meter-input" value="${(room.prevMeter !== '' && room.prevMeter !== null && room.prevMeter !== undefined) ? room.prevMeter : ''}" placeholder="0" data-field="prevMeter" />
           </div>
           <div class="col-sm-4 col-12">
             <label class="form-label extra-small fw-semibold text-secondary mb-1">Current Meter</label>
-            <input type="number" step="1" class="form-control form-control-sm room-meter-input" value="${(room.currMeter !== '' && room.currMeter !== null && room.currMeter !== undefined) ? room.currMeter : ''}" placeholder="5774" data-field="currMeter" />
+            <input type="number" step="1" class="form-control form-control-sm room-meter-input" value="${(room.currMeter !== '' && room.currMeter !== null && room.currMeter !== undefined) ? room.currMeter : ''}" placeholder="0" data-field="currMeter" />
           </div>
           <div class="col-sm-4 col-12">
             <label class="form-label extra-small fw-semibold text-secondary mb-1">Room AC Usage</label>
